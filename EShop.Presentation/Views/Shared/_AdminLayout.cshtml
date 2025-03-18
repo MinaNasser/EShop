@@ -1,0 +1,168 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin Dashboard</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --dark-blue: #023059;
+            --yellow: #efb036;
+            --light-grey: #f7f7f8;
+            --light-blue: #9197b3;
+        }
+
+        body {
+            background-color: var(--light-grey);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: var(--dark-blue);
+            color: white;
+            position: fixed;
+            padding: 20px;
+        }
+
+        .sidebar__logo a {
+            color: var(--yellow);
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .sidebar__menu {
+            margin-top: 30px;
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar__menu .nav-item {
+            margin-bottom: 15px;
+        }
+
+        .sidebar__menu .nav-link {
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .sidebar__menu .nav-link:hover {
+            color: var(--yellow);
+        }
+
+        .dropdown-menu {
+            background-color: var(--light-grey);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--yellow);
+            color: white;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background-color: white;
+            border-bottom: 1px solid var(--light-blue);
+        }
+
+        .navbar .btn-primary {
+            background-color: var(--yellow);
+            border: none;
+            color: #023059;
+            font-weight: bold;
+        }
+
+        .navbar .btn-primary:hover {
+            background-color: var(--dark-blue);
+            color: white;
+        }
+
+        .content {
+            background-color: var(--light-grey);
+        }
+    </style>
+
+    @RenderSection("Styles", false)
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar__logo mb-4">
+            <a asp-controller="home" asp-action="ToDash">AdminPanel</a>
+        </div>
+        <ul class="sidebar__menu">
+            <!-- Categories Menu -->
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" id="categoryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Categories
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
+                    <li><a class="dropdown-item" asp-controller="Category" asp-action="List">View Categories</a></li>
+                    <li><a class="dropdown-item" asp-controller="Category" asp-action="Add">Add Category</a></li>
+                </ul>
+            </li>
+
+            <!-- Products Menu -->
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" id="productDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Products
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="productDropdown">
+                    <li><a class="dropdown-item" asp-controller="Product" asp-action="Index">View Products</a></li>
+                    <li><a class="dropdown-item" asp-controller="Product" asp-action="Add">Add Product</a></li>
+                </ul>
+            </li>
+
+            <!-- Orders Menu -->
+            <li class="nav-item">
+                <a class="nav-link dropdown-toggle" id="orderDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Orders
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="orderDropdown">
+                    <li><a class="dropdown-item" asp-controller="Order" asp-action="Index">View Orders</a></li>
+                    <li><a class="dropdown-item" asp-controller="Order" asp-action="Add">Add Order</a></li> <!-- لو عندك صفحة لإضافة أوردر -->
+                </ul>
+            </li>
+
+            <!-- Users -->
+            <li><a class="nav-link" asp-controller="User" asp-action="List">Users</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1 text-dark">Dashboard</span>
+                <div class="ml-auto">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Logout</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Content -->
+        <div class="content p-4">
+            @RenderBody()
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @RenderSection("Scripts", false)
+</body>
+</html>

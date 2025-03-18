@@ -1,0 +1,118 @@
+﻿@model EditProductViewModel
+@{
+    Layout = "_AdminLayout";
+}
+
+<style>
+    body {
+        background-color: #f7f7f8;
+        color: #023059;
+    }
+
+    h2 {
+        color: #023059;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
+
+    .form-control, .form-select {
+        border: 1px solid #9197b3;
+        border-radius: 10px;
+        padding: 10px;
+        background-color: white;
+    }
+
+    label {
+        color: #023059;
+        font-weight: 600;
+    }
+
+    .btn-primary-custom {
+        background-color: #efb036;
+        color: #023059;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 600;
+    }
+
+    .btn-primary-custom:hover {
+        background-color: #d99b2c;
+        color: white;
+    }
+
+    .img-thumbnail {
+        border-radius: 10px;
+        border: 2px solid #9197b3;
+        max-height: 150px;
+    }
+
+    .card-section {
+        background-color: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+</style>
+
+<div class="container mt-4 card-section">
+    <h2>Edit Product</h2>
+
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description"></label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Price"></label>
+            <input asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Quantity"></label>
+            <input asp-for="Quantity" class="form-control" />
+            <span asp-validation-for="Quantity" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="CategoryId"></label>
+            <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select">
+                <option value="">Select Category</option>
+            </select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        <!-- Existing Images -->
+        <div class="mb-3">
+            <label>Existing Images:</label>
+            <div class="row">
+                @foreach (var img in Model.ExistingImages)
+
+                {
+                    <div class="col-md-3 mb-2">
+                        <img src="@img" class="img-thumbnail" />
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Upload New Images -->
+        <div class="mb-3">
+            <label>Upload New Images:</label>
+            <input type="file" name="NewAttachments" multiple class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-primary-custom">Save Changes</button>
+    </form>
+</div>

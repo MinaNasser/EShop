@@ -1,0 +1,100 @@
+﻿@model AddOrderViewModel
+
+@{
+    Layout = "_AdminLayout";
+}
+
+<h2 class="mt-4 mb-4" style="color:#023059;">Add New Order</h2>
+
+<form asp-action="Add" method="post">
+
+    <div class="mb-3">
+        <label>Client</label>
+        <select asp-for="ClientId" asp-items="Model.Clients" class="form-select"></select>
+    </div>
+
+    <div class="mb-3">
+        <label>City</label>
+        <input asp-for="City" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Address</label>
+        <input asp-for="Address" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Payment Method</label>
+        <select asp-for="PaymentMethod" asp-items="Model.PaymentMethods" class="form-select"></select>
+    </div>
+
+    <div class="mb-3">
+        <label>Status</label>
+        <select asp-for="Status" asp-items="Model.StatusList" class="form-select"></select>
+    </div>
+
+    <hr />
+
+    <h4 style="color:#023059;">Order Items</h4>
+    <div id="items-container">
+        <div class="row mb-3 item-row">
+            <div class="col-md-6">
+                <select name="Items[0].ProductId" class="form-select">
+                    @foreach (var p in Model.Products)
+                    {
+                            <option value="@p.Value">@p.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <input type="number" name="Items[0].Quantity" class="form-control" placeholder="Quantity" min="1" value="1" />
+            </div>
+            <div class="col-md-3">
+                <button type="button" class="btn btn-danger remove-item">Remove</button>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-secondary mb-3" id="add-item">Add Product</button>
+
+    <button type="submit" class="btn btn-primary" style="background-color:#efb036; color:#023059;">Submit Order</button>
+
+</form>
+
+@section Scripts {
+    <script>
+        let itemIndex = 1;
+
+        document.getElementById('add-item').addEventListener('click', function () {
+            let container = document.getElementById('items-container');
+
+            let row = document.createElement('div');
+            row.classList.add('row', 'mb-3', 'item-row');
+            row.innerHTML = `
+                <div class="col-md-6">
+                    <select name="Items[${itemIndex}].ProductId" class="form-select">
+        @foreach (var p in Model.Products)
+        {
+                                <option value="@p.Value">@p.Text</option>
+        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="number" name="Items[${itemIndex}].Quantity" class="form-control" placeholder="Quantity" min="1" value="1" />
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-danger remove-item">Remove</button>
+                </div>
+            `;
+            container.appendChild(row);
+            itemIndex++;
+        });
+
+        // Remove Item Row
+        document.addEventListener('click', function (e) {
+            if (e.target && e.target.classList.contains('remove-item')) {
+                e.target.closest('.item-row').remove();
+            }
+        });
+    </script>
+}

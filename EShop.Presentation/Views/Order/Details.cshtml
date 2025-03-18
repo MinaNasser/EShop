@@ -1,0 +1,36 @@
+﻿<h1 class="mt-4 mb-4" style="color: #023059;">Order Details</h1>
+
+<div class="container">
+    <div class="card mb-4 p-4" style="background-color: #f7f7f8;">
+        <h5>Order ID: @Model.Id</h5>
+        <p><strong>Date:</strong> @Model.Date.ToShortDateString()</p>
+        <p><strong>Total Price:</strong> $@Model.TotalPrice</p>
+        <p><strong>Total Quantity:</strong> @Model.TotalQuantity</p>
+        <p><strong>Status:</strong> @Model.Status</p>
+        <p><strong>Payment Method:</strong> @Model.PaymentMethod</p>
+        <p><strong>Client Name:</strong> @Model.ClientName</p>
+        <p><strong>City:</strong> @Model.City</p>
+        <p><strong>Address:</strong> @Model.Address</p>
+    </div>
+
+    <h4 class="mt-4 mb-3" style="color: #023059;">Order Items</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.ProductName</td>
+                    <td>@item.Quantity</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <a asp-action="Index" class="btn btn-primary" style="background-color: #efb036; color: #023059;">Back to Orders</a>
+</div>

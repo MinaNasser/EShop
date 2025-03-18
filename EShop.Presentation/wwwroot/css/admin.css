@@ -1,0 +1,104 @@
+﻿:root {
+    --sidebar-width: 250px;
+    --primary-color: #7385F2;
+    --light-grey: #f8f9fa;
+    --dark-color: #343a40;
+    --text-color: #333;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--light-grey);
+}
+
+/* Sidebar */
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    background-color: var(--dark-color);
+    color: white;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.sidebar__logo {
+    text-align: center;
+    padding: 20px;
+    background-color: #495057;
+}
+
+.sidebar__menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .sidebar__menu li {
+        padding: 15px 20px;
+        transition: 0.3s;
+    }
+
+        .sidebar__menu li:hover {
+            background-color: #495057;
+        }
+
+        .sidebar__menu li a {
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+
+/* Main Content */
+.main-content {
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar {
+    padding: 10px 20px;
+}
+
+.content {
+    background-color: white;
+    border-radius: 8px;
+    margin: 20px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+
+/* Buttons & Utilities */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+    .btn-primary:hover {
+        background-color: #5b6fde;
+        border-color: #5b6fde;
+    }
+
+/* Background and text color for dropdown items */
+.dropdown-menu {
+    background-color: #343a40; /* Dark background */
+}
+
+.dropdown-item {
+    color: #fff !important; /* White text */
+}
+
+    .dropdown-item:hover {
+        background-color: #495057; /* Slightly lighter on hover */
+        color: #fff;
+    }
+
+.dropdown-menu {
+    background-color: #343a40;
+    transition: all 0.3s ease;
+}
+
+
