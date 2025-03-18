@@ -4,6 +4,8 @@ using EShop.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using IOFile = System.IO.File;
+
 
 namespace EShop.Presentation.Controllers
 {
@@ -105,26 +107,22 @@ namespace EShop.Presentation.Controllers
                 product.Quantity = model.Quantity;
                 product.Price = model.Price;
                 product.CategoryId = model.CategoryId;
-
-                // رفع الصور الجديدة إن وُجدت
                 if (model.NewAttachments != null && model.NewAttachments.Any())
                 {
                     foreach (var file in model.NewAttachments)
                     {
                         if (file.Length > 0)
                         {
-                            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "~/images/Products", fileName);
+                           
+                            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "Products", file.FileName);
 
                             using (var stream = new FileStream(filePath, FileMode.Create))
                             {
                                 file.CopyTo(stream);
                             }
-
-                            // إضافة الصورة لقاعدة البيانات
                             var attachment = new ProductAttachment
                             {
-                                Image = "~/images/Products/" + fileName,
+                                Image = "~/Images/Products/" + file.FileName,
                                 ProductId = product.Id
                             };
                             context.ProductAttachments.Add(attachment);
@@ -137,7 +135,7 @@ namespace EShop.Presentation.Controllers
             }
 
             ViewBag.Categories = new SelectList(context.Categories, "Id", "Name", model.CategoryId);
-            return View(model);
+            return View("");
         }
         private List<SelectListItem> GetCategories()
         {
@@ -147,13 +145,29 @@ namespace EShop.Presentation.Controllers
 
         public IActionResult Delete(int id)
         {
-            var Prod = context.Products.Find(id);
+            var Prod = context.Products
+                .Include(p => p.Attachments)
+                .FirstOrDefault(p => p.Id == id);
+
             if (Prod == null)
             {
-                return View("Home/Index");
+                return RedirectToAction("Index", "Home"); 
             }
-            context.Remove(Prod);
+
+            foreach (var attachment in Prod.Attachments)
+            {
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "Products", attachment.Image);
+
+                if (IOFile.Exists(filePath))
+                {
+                    IOFile.Delete(filePath);
+                }
+            }
+
+            // حذف من DB
+            context.Products.Remove(Prod);
             context.SaveChanges();
+
             return RedirectToAction("Index");
         }
 

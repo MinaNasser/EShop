@@ -3,13 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.Presentation", "EShop.Presentation\EShop.Presentation.csproj", "{587A33D5-04CC-414C-B2C2-B5F12A7A4106}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EShop.Presentation", "EShop.Presentation\EShop.Presentation.csproj", "{587A33D5-04CC-414C-B2C2-B5F12A7A4106}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "test", "test\test.csproj", "{0299A42E-53A2-4DC0-A551-3098BFF756AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "test", "test\test.csproj", "{0299A42E-53A2-4DC0-A551-3098BFF756AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EF_Core", "EF_Core\EF_Core.csproj", "{C4F452FA-E0B3-9D73-866C-9FE36F944A49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EF_Core", "EF_Core\EF_Core.csproj", "{C4F452FA-E0B3-9D73-866C-9FE36F944A49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.ViewModels", "EShop.ViewModels\EShop.ViewModels.csproj", "{71FF9049-02E4-482C-85CE-8F9D4FCB35B7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EShop.ViewModels", "EShop.ViewModels\EShop.ViewModels.csproj", "{71FF9049-02E4-482C-85CE-8F9D4FCB35B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EShop.Managers", "EShop.Managers\EShop.Managers.csproj", "{AC9454CE-9989-41C8-A63D-1CA69FBF49B8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{71FF9049-02E4-482C-85CE-8F9D4FCB35B7} = {71FF9049-02E4-482C-85CE-8F9D4FCB35B7}
+		{C4F452FA-E0B3-9D73-866C-9FE36F944A49} = {C4F452FA-E0B3-9D73-866C-9FE36F944A49}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +39,10 @@ Global
 		{71FF9049-02E4-482C-85CE-8F9D4FCB35B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71FF9049-02E4-482C-85CE-8F9D4FCB35B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71FF9049-02E4-482C-85CE-8F9D4FCB35B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC9454CE-9989-41C8-A63D-1CA69FBF49B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC9454CE-9989-41C8-A63D-1CA69FBF49B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC9454CE-9989-41C8-A63D-1CA69FBF49B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC9454CE-9989-41C8-A63D-1CA69FBF49B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
