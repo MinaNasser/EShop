@@ -7,16 +7,18 @@ namespace EShop.Manegers
 {
     public class ProductManager :BaseManager<Product>
     {
-        public List<ProductDetailsViewModel> Search(string searchText= "", decimal price = 0,
-            int categoryId = 0, string vendorId = "",int pageNumber = 1,
+        public PaginationViewModel<ProductDetailsViewModel> Search(
+            string searchText = "", decimal price = 0,
+            int categoryId = 0, string vendorId = "", int pageNumber = 1,
             int pageSize = 4)
         {
+
             var builder = PredicateBuilder.New<Product>();
 
             var old = builder;
 
             if (!searchText.IsNullOrEmpty())
-                builder = builder.And(i => i.Name.ToLower().Contains(searchText.ToLower())|| i.Description.ToLower().Contains(searchText.ToLower()));
+                builder = builder.And(i => i.Name.ToLower().Contains(searchText.ToLower()) || i.Description.ToLower().Contains(searchText.ToLower()));
 
             if (price > 1)
                 builder = builder.And(i => i.Price <= price);
@@ -28,11 +30,46 @@ namespace EShop.Manegers
                 builder = builder.And(i => i.CategoryId == categoryId);
 
 
-            if(old == builder)
+
+            builder = builder.And(i => i.IsDelated == false);
+
+            if (old == builder)
                 builder = null;
 
-            return base.Get(filter: builder, pageSize: pageSize, pageNumber: pageNumber).Select(p=>p.ToDetailsVModel()).ToList();
+
+            var count = base.GetList(builder).Count();
+
+            var resultAfterPagination = base.Get(
+                filter: builder,
+                pageSize: pageSize,
+                pageNumber: pageNumber)
+                .Select(p => p.ToDetailsVModel()).ToList();
+
+            return new PaginationViewModel<ProductDetailsViewModel>
+            {
+                Data = resultAfterPagination,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Total = count
+            };
+
 
         }
+        public int GetCount(string searchText = "", decimal price = 0, int categoryId = 0)
+        {
+            var builder = PredicateBuilder.New<Product>(true);
+
+            if (!string.IsNullOrEmpty(searchText))
+                builder = builder.And(i => i.Name.ToLower().Contains(searchText.ToLower()) || i.Description.ToLower().Contains(searchText.ToLower()));
+
+            if (price > 0)
+                builder = builder.And(i => i.Price <= price);
+
+            if (categoryId > 0)
+                builder = builder.And(i => i.CategoryId == categoryId);
+
+            return base.Get(filter: builder).Count();
+        }
+ 
     }
 }

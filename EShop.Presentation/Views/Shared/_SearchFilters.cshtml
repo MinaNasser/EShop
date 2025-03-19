@@ -1,0 +1,48 @@
+﻿
+@model PaginationViewModel<ProductDetailsViewModel>
+
+<div class="container mb-4">
+    <form id="filterForm" asp-action="Index" method="get" class="row g-3">
+
+        <div class="col-md-4">
+            <input type="text" name="searchText" class="form-control" placeholder="Search by name or description"
+                   value="@Context.Request.Query["searchText"]" oninput="autoSubmit()" />
+        </div>
+
+        <div class="col-md-2">
+            <input type="number" name="price" class="form-control" placeholder="Max Price" value="@Context.Request.Query["price"]" />
+        </div>
+
+        <div class="col-md-3">
+            <select name="categoryId" class="form-select" onchange="autoSubmit()">
+                <option value="">Select Category</option>
+                @foreach (var cat in ViewBag.CategoriesList)
+                {
+                    <option value="@cat.Value"
+                            selected="@(Context.Request.Query["categoryId"] == cat.Value ? "selected" : null)">
+                        @cat.Text
+                    </option>
+
+                }
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn" style="background-color: #efb036; color: #023059; font-weight: bold;">Apply Filters</button>
+        </div>
+
+        <!-- Hidden Input for Page Number -->
+        <input type="hidden" name="pageNumber" value="@Model.PageNumber" />
+    </form>
+</div>
+
+@section scripts {
+    <script>
+        function autoSubmit() {
+            let form = document.getElementById('filterForm');
+            form.pageNumber.value = 1; // Reset to first page
+            form.submit();
+        }
+    </script>
+}
+

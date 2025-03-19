@@ -15,12 +15,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EF_Core\EF_Core.csproj" />
+    <ProjectReference Include="..\EShop.Managers\EShop.Managers.csproj" />
     <ProjectReference Include="..\EShop.ViewModels\EShop.ViewModels.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\Images\Users\" />
     <Folder Include="wwwroot\Images\Products\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
   </ItemGroup>
 
 </Project>

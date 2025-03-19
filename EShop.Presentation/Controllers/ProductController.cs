@@ -1,81 +1,128 @@
-﻿using EF_Core;
-using EF_Core.Models;
+﻿using EF_Core.Models;
+using EShop.Manegers;
 using EShop.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using IOFile = System.IO.File;
-
+using System.IO;
 
 namespace EShop.Presentation.Controllers
 {
     public class ProductController : Controller
     {
-        private EShopContext context = new EShopContext();
+        private readonly ProductManager productManager;
+        private readonly CategoryManager categoryManager;
 
-        //    .... /product/index
-        //    .... /product
-        public IActionResult Index()
+        public ProductController()
         {
-            var list = context.Products.Select(prd => prd.ToDetailsVModel()).ToList();
+            this.productManager = new ProductManager();
+            this.categoryManager = new CategoryManager();
+        }
+        //public IActionResult Index(string searchText = "", decimal price = 0,
+        //     int categoryId = 0, string vendorId = "", int pageNumber = 1, int pageSize = 3)
+        //{
+        //    ViewData["CategoriesList"] = GetCategories();
+
+        //    PaginationViewModel<ProductDetailsViewModel> products;
+
+        //    if (string.IsNullOrEmpty(searchText) && price == 0 && categoryId == 0 && string.IsNullOrEmpty(vendorId))
+        //    {
+        //        var query = productManager.Get(null, pageSize, pageNumber)
+        //            .Include(p => p.Attachments)
+        //            .Include(p => p.Category)
+        //            .Include(p => p.Vendor);
+
+        //        var list = query.Select(p => new ProductDetailsViewModel
+        //        {
+        //            Id = p.Id,
+        //            Name = p.Name,
+        //            Description = p.Description,
+        //            Quantity = p.Quantity,
+        //            Price = p.Price,
+        //            CategoryName = p.Category != null ? p.Category.Name : "",
+        //            VendorName = p.Vendor != null ? p.Vendor.User.UserName : "",
+        //            CreatedAt = p.CreatedAt,
+        //            Images = p.Attachments.Select(a => a.Image).ToList()
+        //        }).ToList();
+
+        //        products = new PaginationViewModel<ProductDetailsViewModel>
+        //        {
+        //            Data = list,
+        //            PageNumber = pageNumber,
+        //            PageSize = pageSize,
+        //            Total = productManager.GetCount()
+        //        };
+        //    }
+        //    else
+        //    {
+        //        products = productManager.Search(
+        //            categoryId: categoryId,
+        //            vendorId: vendorId,
+        //            searchText: searchText,
+        //            price: price,
+        //            pageNumber: pageNumber,
+        //            pageSize: pageSize
+        //        );
+        //    }
+
+        //    // 🔽 Calculate PageCount
+        //    decimal pageCount = Math.Ceiling((decimal)products.Total / products.PageSize);
+        //    ViewData["PageCount"] = pageCount;
+
+        //    return View(products);
+        //}
+        public IActionResult Index(string searchText = "", decimal price = 0,
+            int categoryId = 0, string vendorId = "", int pageNumber = 1,
+            int pageSize = 3)
+        {
+            ViewData["CategoriesList"] = GetCategories();
+
+            var list = productManager.Search(categoryId: categoryId, vendorId: vendorId,
+                searchText: searchText, price: price, pageNumber: pageNumber, pageSize: pageSize);
             return View(list);
         }
 
         [HttpGet]
         public IActionResult Add()
         {
-
-
             ViewData["CategoriesList"] = GetCategories();
-            //cast  
-
-            ViewBag.Title = "Welcome";
-            //no cast
+            ViewBag.Title = "Add Product";
             return View();
         }
+
         [HttpPost]
         public IActionResult Add(AddProductViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                //add to db
-                //.../Images/Products/xyz.png
-                //
+                // Save uploaded images
                 foreach (var file in viewModel.Attachments)
                 {
-                    FileStream fileStream = new FileStream(
-                            Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images" ,"Products", file.FileName),
-                            FileMode.Create);
-
-                    file.CopyTo(fileStream);
-
-                    fileStream.Position = 0;
-
-                    //save path to database;
-
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "Products", file.FileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
                     viewModel.Paths.Add($"/Images/Products/{file.FileName}");
-
                 }
 
-                context.Products.Add(viewModel.ToModel());
-                context.SaveChanges();
+                productManager.Add(viewModel.ToModel());
+
                 return RedirectToAction("Index");
             }
 
             ViewData["CategoriesList"] = GetCategories();
-            return View();
+            return View(viewModel);
         }
+
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var product = context.Products
+            var product = productManager.Get(p => p.Id == id)
                 .Include(p => p.Attachments)
-                .FirstOrDefault(p => p.Id == id);
+                .FirstOrDefault();
 
-            if (product == null)
-            {
-                return NotFound();
-            }
+            if (product == null) return NotFound();
 
             var viewModel = new EditProductViewModel
             {
@@ -90,7 +137,7 @@ namespace EShop.Presentation.Controllers
                 ExistingImages = product.Attachments?.Select(a => a.Image).ToList() ?? new List<string>()
             };
 
-            ViewBag.Categories = new SelectList(context.Categories, "Id", "Name", viewModel.CategoryId);
+            ViewData["CategoriesList"] = GetCategories();
             return View(viewModel);
         }
 
@@ -99,7 +146,10 @@ namespace EShop.Presentation.Controllers
         {
             if (ModelState.IsValid)
             {
-                var product = context.Products.Include(p => p.Attachments).FirstOrDefault(p => p.Id == model.Id);
+                var product = productManager.Get(p => p.Id == model.Id)
+                    .Include(p => p.Attachments)
+                    .FirstOrDefault();
+
                 if (product == null) return NotFound();
 
                 product.Name = model.Name;
@@ -107,70 +157,63 @@ namespace EShop.Presentation.Controllers
                 product.Quantity = model.Quantity;
                 product.Price = model.Price;
                 product.CategoryId = model.CategoryId;
+
+                // New Attachments
                 if (model.NewAttachments != null && model.NewAttachments.Any())
                 {
                     foreach (var file in model.NewAttachments)
                     {
-                        if (file.Length > 0)
+                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "Products", file.FileName);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
                         {
-                           
-                            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "Products", file.FileName);
-
-                            using (var stream = new FileStream(filePath, FileMode.Create))
-                            {
-                                file.CopyTo(stream);
-                            }
-                            var attachment = new ProductAttachment
-                            {
-                                Image = "~/Images/Products/" + file.FileName,
-                                ProductId = product.Id
-                            };
-                            context.ProductAttachments.Add(attachment);
+                            file.CopyTo(stream);
                         }
+                        var attachment = new ProductAttachment
+                        {
+                            Image = "/Images/Products/" + file.FileName,
+                            ProductId = product.Id
+                        };
+                        product.Attachments.Add(attachment);
                     }
                 }
 
-                context.SaveChanges();
+                productManager.Edit(product);
+
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Categories = new SelectList(context.Categories, "Id", "Name", model.CategoryId);
-            return View("");
-        }
-        private List<SelectListItem> GetCategories()
-        {
-            return context.Categories
-            .Select(cat => new SelectListItem(cat.Name, cat.Id.ToString())).ToList();
+            ViewData["CategoriesList"] = GetCategories();
+            return View(model);
         }
 
         public IActionResult Delete(int id)
         {
-            var Prod = context.Products
+            var product = productManager.Get(p => p.Id == id)
                 .Include(p => p.Attachments)
-                .FirstOrDefault(p => p.Id == id);
+                .FirstOrDefault();
 
-            if (Prod == null)
-            {
-                return RedirectToAction("Index", "Home"); 
-            }
+            if (product == null)
+                return RedirectToAction("Index");
 
-            foreach (var attachment in Prod.Attachments)
+            // Delete Images
+            foreach (var attachment in product.Attachments)
             {
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images", "Products", attachment.Image);
-
-                if (IOFile.Exists(filePath))
+                if (System.IO.File.Exists(filePath))
                 {
-                    IOFile.Delete(filePath);
+                    System.IO.File.Delete(filePath);
                 }
             }
 
-            // حذف من DB
-            context.Products.Remove(Prod);
-            context.SaveChanges();
+            productManager.Delete(product);
 
             return RedirectToAction("Index");
         }
 
-
+        private List<SelectListItem> GetCategories()
+        {
+            return categoryManager.Get()
+                .Select(cat => new SelectListItem(cat.Name, cat.Id.ToString())).ToList();
+        }
     }
 }

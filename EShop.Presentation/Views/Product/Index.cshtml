@@ -1,20 +1,29 @@
 ﻿@{
     Layout = "_AdminLayout";
+    var list = ViewData["CategoriesList"] as List<SelectListItem>;
+    bool canNext = !(Model.PageNumber * Model.PageSize < Model.Total);
+    bool canBack = Model.PageNumber <= 1;
+
+    int PageCount = (int)Math.Ceiling((double)Model.Total / Model.PageSize);
 }
-@model List<ProductDetailsViewModel>
+@model PaginationViewModel<ProductDetailsViewModel>
 
 <h1 class="mt-4 mb-4" style="color: #023059;">Product List</h1>
+<div class="container mb-4">
+    <form asp-action="Index" method="get" class="row g-3" id="filterForm">
 
         <div class="col-md-4">
-            <input type="text" name="searchText" class="form-control" placeholder="Search by name or description" value="@Context.Request.Query["searchText"]" />
+            <input type="text" name="searchText" class="form-control" placeholder="Search by name or description"
+                   value="@Context.Request.Query["searchText"]" oninput="autoSubmit()" />
         </div>
 
         <div class="col-md-2">
-            <input type="number" name="price" class="form-control" placeholder="Max Price" value="@Context.Request.Query["price"]" />
+            <input type="number" name="price" class="form-control" placeholder="Max Price"
+                   value="@Context.Request.Query["price"]" oninput="autoSubmit()" />
         </div>
 
         <div class="col-md-3">
-            <select name="categoryId" class="form-select">
+            <select name="categoryId" class="form-select" onchange="autoSubmit()">
                 <option value="">Select Category</option>
                 @foreach (var cat in ViewBag.CategoriesList)
                 {
@@ -31,7 +40,10 @@
         </div>
 
         <div class="col-md-2">
-            <button type="submit" class="btn" style="background-color: #efb036; color: #023059; font-weight: bold;">Apply Filters</button>
+            <button type="submit" class="btn"
+                    style="background-color: #efb036; color: #023059; font-weight: bold;">
+                Apply Filters
+            </button>
         </div>
 
         <!-- Hidden Input for Page Number -->
@@ -39,10 +51,10 @@
     </form>
 </div>
 
+
 <div class="container">
     <div class="row">
-        @foreach (var prd in Model)
-
+        @foreach (var prd in Model.Data)
         {
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow-sm" style="border: 1px solid #9197b3; border-radius: 12px;">
@@ -51,25 +63,17 @@
                     <div id="carousel-@prd.Id" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-inner">
                             @if (prd.Images != null && prd.Images.Any())
-
                             {
-
                                 var isFirst = true;
-
                                 foreach (var img in prd.Images)
-
                                 {
                                     <div class="carousel-item @(isFirst ? "active" : "")">
                                         <img src="@img" class="d-block w-100" alt="@prd.Name" style="border-radius: 12px 12px 0 0; height: 250px; object-fit: cover;" />
                                     </div>
                                     isFirst = false;
-
                                 }
-
                             }
-
                             else
-
                             {
                                 <div class="carousel-item active">
                                     <img src="/images/default.jpg" class="d-block w-100 h-50" alt="@prd.Name" style="border-radius: 12px 12px 0 0; height: 250px; object-fit: cover;" />
@@ -79,7 +83,6 @@
 
                         <!-- Controls -->
                         @if (prd.Images != null && prd.Images.Count > 1)
-
                         {
                             <button class="carousel-control-prev" type="button" data-bs-target="#carousel-@prd.Id" data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -127,3 +130,45 @@
         }
     </div>
 </div>
+
+<!-- Pagination Buttons -->
+<div class="d-flex justify-content-center align-items-center mt-4">
+    <button class="btn btn-primary mx-1" style="background-color: #efb036; color: #023059; font-weight: bold;"  onclick="page('back')" @(canBack ? "disabled" : "")>Back</button>
+
+    @for (int i = 1; i <= PageCount; i++)
+    {
+        <button style="background-color: #023059; color: white; font-weight: bold;" class="btn btn-primary mx-1 @(Model.PageNumber == i ? "active" : "")" onclick="page(@i)">
+            @i
+        </button>
+    }
+
+    <button class="btn btn-primary mx-1" style="background-color: #efb036; color: #023059; font-weight: bold;" onclick="page('next')" @(canNext ? "disabled" : "")>Next</button>
+</div>
+
+@section scripts {
+    <script>
+        let form = document.getElementById("filterForm");
+
+        function page(btn) {
+            if (btn === "next") {
+                form.pageNumber.value++;
+            } else if (btn === "back") {
+                form.pageNumber.value--;
+            } else {
+                form.pageNumber.value = btn;
+            }
+            form.submit();
+        }
+
+        // Auto Submit with delay
+        let timeout;
+        function autoSubmit() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                form.pageNumber.value = 1; // Reset to page 1
+                form.submit();
+            }, 500); // Delay 500ms to avoid too many requests
+        }
+    </script>
+}
+
