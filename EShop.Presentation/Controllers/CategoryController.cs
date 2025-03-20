@@ -1,5 +1,6 @@
 ﻿using EF_Core;
 using EF_Core.Models;
+using EShop.Manegers;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
 
@@ -7,11 +8,17 @@ namespace EShop.Presentation.Controllers
 {
     public class CategoryController : Controller
     {
-        private EShopContext context = new EShopContext();
+        private CategoryManager categoryManager;
+
+
+        public CategoryController(CategoryManager _categoryManager)
+        {
+            categoryManager = _categoryManager;
+        }
         //    ...... /Categry/list
         public IActionResult List()
         {
-            var list = context.Categories.ToList();
+            var list = categoryManager.Get().ToList();
 
             return View("Index",list);
         }
@@ -23,22 +30,20 @@ namespace EShop.Presentation.Controllers
         [HttpPost]
         public IActionResult Add(Category category)
         {
-            context.Categories.Add(category);
-            context.SaveChanges();
+            categoryManager.Add(category);
             return RedirectToAction("List");
         }
 
         [HttpGet]
         public IActionResult Edit( int Id,string name)
         {
-            var selected = context.Categories.FirstOrDefault(i => i.Id == Id);
+            var selected = categoryManager.Get(i=>i.Id==Id).FirstOrDefault();
             return View(selected);
         }
         [HttpPost]
         public IActionResult Edit(Category category)
         {
-            context.Categories.Update(category);
-            context.SaveChanges();
+            categoryManager.Edit(category);
             return RedirectToAction("List");
         }
         //public IActionResult testjson()
@@ -47,11 +52,10 @@ namespace EShop.Presentation.Controllers
         //}
         public IActionResult Delete(int id)
         {
-            var cat = context.Categories.FirstOrDefault(i=>i.Id==id);
+            var cat = categoryManager.Get(i=>i.Id==id).FirstOrDefault();
             if (cat != null)
             {
-                context.Categories.Remove(cat);
-                context.SaveChanges();
+                categoryManager.Delete(cat);
                 return RedirectToAction("List");
             }
             else

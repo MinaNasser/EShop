@@ -1,6 +1,8 @@
 ﻿using EF_Core;
 using EF_Core.Enums;
 using EF_Core.Models;
+using EShop.Managers;
+using EShop.Manegers;
 using EShop.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -8,11 +10,19 @@ using Microsoft.EntityFrameworkCore;
 
 public class OrderController : Controller
 {
-    private readonly EShopContext context = new EShopContext();
+    private OrderManager orderManager;
+    private ProductManager productManager;
+    private ClientManager clientManager;
+    public OrderController(OrderManager _orderManager,ProductManager _productManager,ClientManager _clientManager)
+    {
+        this.orderManager = _orderManager;
+        this.productManager = _productManager;
+        this.clientManager = _clientManager;
+    }
 
     public IActionResult Index()
     {
-        var orders = context.Orders
+        var orders = orderManager.Get()
             .Include(o => o.Client)
             .Include(o => o.Items)
             .ThenInclude(i => i.Product)
@@ -24,7 +34,7 @@ public class OrderController : Controller
 
     public IActionResult Details(int id)
     {
-        var order = context.Orders
+        var order = orderManager.Get()
             .Include(o => o.Client)
             .Include(o => o.Items)
             .ThenInclude(i => i.Product)
@@ -44,8 +54,8 @@ public class OrderController : Controller
     {
         var model = new AddOrderViewModel
         {
-            Clients = context.Clients.Select(c => new SelectListItem { Value = c.UserId, Text = c.User.UserName }).ToList(),
-            Products = context.Products.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.Name }).ToList(),
+            Clients = clientManager.Get().Select(c => new SelectListItem { Value = c.UserId, Text = c.User.UserName }).ToList(),
+            Products = productManager.Get().Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.Name }).ToList(),
             PaymentMethods = Enum.GetValues(typeof(TypeOfPayment)).Cast<TypeOfPayment>()
                                   .Select(p => new SelectListItem { Value = p.ToString(), Text = p.ToString() }).ToList(),
             StatusList = Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>()
@@ -68,25 +78,20 @@ public class OrderController : Controller
                 Date = DateTime.Now,
                 PaymentMethod = Enum.Parse<TypeOfPayment>(model.PaymentMethod),
                 Status = Enum.Parse<OrderStatus>(model.Status),
-                Items = model.Items.Select(i => new OrderItem
-                {
-                    ProductId = i.ProductId,
-                    Quantity = i.Quantity
-                }).ToList()
+                
             };
 
             order.TotalQuantity = order.Items.Sum(i => i.Quantity);
-            order.TotalPrice = order.Items.Sum(i => i.Quantity * context.Products.Find(i.ProductId).Price);
+            order.TotalPrice = order.Items.Sum(i => i.Quantity * i.Product.Price);
 
-            context.Orders.Add(order);
-            context.SaveChanges();
+            orderManager.Add(order);
 
             return RedirectToAction("Index");
         }
 
         // Refill dropdowns if model state invalid
-        model.Clients = context.Clients.Select(c => new SelectListItem { Value = c.UserId, Text = c.User.UserName }).ToList();
-        model.Products = context.Products.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.Name }).ToList();
+        model.Clients = clientManager.Get().Select(c => new SelectListItem { Value = c.UserId, Text = c.User.UserName }).ToList();
+        model.Products = productManager.Get().Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.Name }).ToList();
         model.PaymentMethods = Enum.GetValues(typeof(TypeOfPayment)).Cast<TypeOfPayment>()
                               .Select(p => new SelectListItem { Value = p.ToString(), Text = p.ToString() }).ToList();
         model.StatusList = Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>()

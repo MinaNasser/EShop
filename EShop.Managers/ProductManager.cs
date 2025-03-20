@@ -1,4 +1,5 @@
-﻿using EF_Core.Models;
+﻿using EF_Core;
+using EF_Core.Models;
 using EShop.ViewModels;
 using LinqKit;
 using Microsoft.IdentityModel.Tokens;
@@ -7,6 +8,10 @@ namespace EShop.Manegers
 {
     public class ProductManager :BaseManager<Product>
     {
+        public ProductManager(EShopContext _eShop) : base(_eShop)
+        {
+
+        }
         public PaginationViewModel<ProductDetailsViewModel> Search(
             string searchText = "", decimal price = 0,
             int categoryId = 0, string vendorId = "", int pageNumber = 1,

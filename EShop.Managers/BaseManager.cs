@@ -11,10 +11,11 @@ namespace EShop.Manegers
 
         private readonly EShopContext dbcontext;
         private DbSet<T> table;
-        public BaseManager()
+        public BaseManager(EShopContext _eShop)
         {
             //DI
-            dbcontext = new EShopContext();
+            //dbcontext = new EShopContext();
+            this.dbcontext = _eShop;
             table = dbcontext.Set<T>();
         }
 

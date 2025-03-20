@@ -13,10 +13,10 @@ namespace EShop.Presentation.Controllers
         private readonly ProductManager productManager;
         private readonly CategoryManager categoryManager;
 
-        public ProductController()
+        public ProductController(ProductManager _productManager, CategoryManager _categoryManager)
         {
-            this.productManager = new ProductManager();
-            this.categoryManager = new CategoryManager();
+            this.productManager = _productManager;
+            this.categoryManager = _categoryManager;
         }
         //public IActionResult Index(string searchText = "", decimal price = 0,
         //     int categoryId = 0, string vendorId = "", int pageNumber = 1, int pageSize = 3)

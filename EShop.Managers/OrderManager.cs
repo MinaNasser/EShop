@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EShop.Manegers
 {
-    public class CategoryManager : BaseManager<Category>
+    public class OrderManager : BaseManager<Order>
     {
-        public CategoryManager(EShopContext _eShop) : base(_eShop)
+        public OrderManager(EShopContext _eShop) : base(_eShop)
         {
 
         }

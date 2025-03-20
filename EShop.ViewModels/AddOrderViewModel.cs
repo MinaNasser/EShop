@@ -14,7 +14,7 @@ namespace EShop.ViewModels
         public string ClientId { get; set; }
 
         // List of products + quantity
-        public List<OrderItemInput> Items { get; set; } = new List<OrderItemInput>();
+        //public List<OrderItemInput> Items { get; set; } = new List<OrderItemInput>();
 
         // Dropdowns:
         public List<SelectListItem> Clients { get; set; }

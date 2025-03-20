@@ -6,6 +6,10 @@ namespace EF_Core
 {
     public class EShopContext : IdentityDbContext<User>
     {
+        public EShopContext(DbContextOptions options):base(options)
+        {
+            
+        }
         //tables
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
@@ -19,11 +23,11 @@ namespace EF_Core
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Review> Reviews { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseLazyLoadingProxies().UseSqlServer("Data source =. ; Initial catalog = E-Shop; Integrated security= true; trustservercertificate = true;MultipleActiveResultSets=True");
-            base.OnConfiguring(optionsBuilder);
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseLazyLoadingProxies().UseSqlServer("Data source =. ; Initial catalog = E-Shop; Integrated security= true; trustservercertificate = true;MultipleActiveResultSets=True");
+        //    base.OnConfiguring(optionsBuilder);
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
