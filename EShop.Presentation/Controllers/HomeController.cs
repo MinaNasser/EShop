@@ -23,6 +23,10 @@ public class HomeController : Controller
     }
     public IActionResult ToDash()
     {
+        return RedirectToAction("Register", "Account");
+    }
+    public IActionResult AdminPanal()
+    {
         return View();
     }
 

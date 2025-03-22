@@ -1,5 +1,8 @@
 using EF_Core;
+using EF_Core.Models;
+using EShop.Managers;
 using EShop.Manegers;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,10 +19,13 @@ builder.Services
         )
 
     );
+builder.Services.AddIdentity<User, IdentityRole>()
+    .AddEntityFrameworkStores<EShopContext>();
+
 
 builder.Services.AddScoped(typeof(ProductManager));
 builder.Services.AddScoped(typeof(CategoryManager));
-
+builder.Services.AddScoped(typeof(AccountManager));
 var app = builder.Build();
 
 app.UseRouting();
