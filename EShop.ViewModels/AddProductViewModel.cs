@@ -33,7 +33,7 @@ namespace EShop.ViewModels
         [DisplayName("Select Product Category")]
         public int CategoryId { get; set; }
 
-        public string VendorId { get; set; } = "al123";
+        public string VendorId { get; set; }
         public bool IsDelated { get; set; } = false;
         //[NotMapped]
         public DateTime CreatedAt { get; set; } = DateTime.Now;

@@ -2,6 +2,8 @@
 using EShop.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EShop.Presentation.Controllers
@@ -9,14 +11,18 @@ namespace EShop.Presentation.Controllers
     public class AccountController : Controller
     {
         private AccountManager accountManager;
+        private RoleManager roleManager;
 
-        public AccountController(AccountManager accountManager) 
+        public AccountController(AccountManager accountManager,RoleManager roleManager) 
         {
             this.accountManager = accountManager;
+            this.roleManager = roleManager;
         }
         [HttpGet]
         public IActionResult Register()
         {
+            ViewBag.roles=roleManager.GetRoles();
+
             return View();
         }
         [HttpPost]
@@ -35,9 +41,11 @@ namespace EShop.Presentation.Controllers
                     {
                         ModelState.AddModelError("", item.Description);
                     }
+                    ViewBag.roles = roleManager.GetRoles();
                     return View();
                 }
             }
+            ViewBag.roles = roleManager.GetRoles();
             return View();
         }
 
@@ -55,7 +63,13 @@ namespace EShop.Presentation.Controllers
                 var res = await accountManager.Login(vmodel);
                 if (res.Succeeded)
                 {
-                    return RedirectToAction("AdminPanal", "Home");
+                    var role = User.Claims.FirstOrDefault(C => C.Type == ClaimTypes.Role).Value;
+                    if (role== "Vendor")
+                    {
+                        return RedirectToAction("AdminPanal", "Home");
+                    }
+                    return RedirectToAction("Index", "Home");
+
                 }
                 else if (res.IsLockedOut || res.IsNotAllowed)
                 {

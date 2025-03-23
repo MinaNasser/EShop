@@ -2,13 +2,6 @@
 using EF_Core.Models;
 using EShop.Manegers;
 using EShop.ViewModels;
-using EShop.ViewModels.Account;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 namespace EShop.Managers
 {
@@ -16,20 +9,49 @@ namespace EShop.Managers
     {
         private UserManager<User> userManager;
         private SignInManager<User> signInManager;
+        private VendorManager vendorManager;
+        private ClientManager clientManager;
         public AccountManager(
             EShopContext context,
             UserManager<User> _userManager,
-            SignInManager<User> _signInManager
+            SignInManager<User> _signInManager,
+            VendorManager _vendorManager,
+            ClientManager _clientManager
             ):base(context)
         {
             userManager =_userManager;
             signInManager = _signInManager;
+            vendorManager = _vendorManager;
+            clientManager = _clientManager;
             
         }
 
         public async Task<IdentityResult> Register(UserRegisterViewModel userRegisterVM)
         {
-            return await userManager.CreateAsync(userRegisterVM.ToModel(), userRegisterVM.Password);
+            IdentityResult res = await userManager.CreateAsync(userRegisterVM.ToModel(), userRegisterVM.Password);
+            if (res.Succeeded)
+            {
+                User user = await userManager.FindByNameAsync(userRegisterVM.UserName);
+                res =await userManager.AddToRoleAsync(user,userRegisterVM.Role);
+                if (userRegisterVM.Role == "Vendor")
+                {
+                    Vendor vendor = new Vendor
+                    {
+                        UserId = user.Id
+
+                    };
+                    vendorManager.Add(vendor);
+                }else if(userRegisterVM.Role == "Client")
+                {
+                    Client client = new Client
+                    {
+                        UserId = user.Id
+                    };
+                    clientManager.Add(client);
+                }
+            }
+            return res;
+            
         }
         public async Task<SignInResult> Login(UserLoginViewModel userLoginVM)
         {

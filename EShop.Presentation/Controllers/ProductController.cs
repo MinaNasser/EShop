@@ -1,10 +1,12 @@
 ﻿using EF_Core.Models;
 using EShop.Manegers;
 using EShop.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
+using System.Security.Claims;
 
 namespace EShop.Presentation.Controllers
 {
@@ -81,6 +83,7 @@ namespace EShop.Presentation.Controllers
                 searchText: searchText, price: price, pageNumber: pageNumber, pageSize: pageSize);
             return View(list);
         }
+        [Authorize (Roles = "Vendor,Admin")]
 
         [HttpGet]
         public IActionResult Add()
@@ -89,6 +92,8 @@ namespace EShop.Presentation.Controllers
             ViewBag.Title = "Add Product";
             return View();
         }
+
+        [Authorize(Roles = "Vendor,Admin")]
 
         [HttpPost]
         public IActionResult Add(AddProductViewModel viewModel)
@@ -105,7 +110,7 @@ namespace EShop.Presentation.Controllers
                     }
                     viewModel.Paths.Add($"/Images/Products/{file.FileName}");
                 }
-
+                viewModel.VendorId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
                 productManager.Add(viewModel.ToModel());
 
                 return RedirectToAction("Index");
@@ -114,6 +119,7 @@ namespace EShop.Presentation.Controllers
             ViewData["CategoriesList"] = GetCategories();
             return View(viewModel);
         }
+        [Authorize(Roles = "Vendor,Admin")]
 
         [HttpGet]
         public IActionResult Edit(int id)
@@ -140,6 +146,8 @@ namespace EShop.Presentation.Controllers
             ViewData["CategoriesList"] = GetCategories();
             return View(viewModel);
         }
+        [Authorize(Roles = "Vendor,Admin")]
+
 
         [HttpPost]
         public IActionResult Edit(EditProductViewModel model)
@@ -185,7 +193,8 @@ namespace EShop.Presentation.Controllers
             ViewData["CategoriesList"] = GetCategories();
             return View(model);
         }
-
+        [HttpPost]
+        [Authorize(Roles = "Vendor,Admin")]
         public IActionResult Delete(int id)
         {
             var product = productManager.Get(p => p.Id == id)

@@ -43,6 +43,10 @@ namespace EShop.ViewModels
         [Phone]
 
         public string PhoneNumber { get; set; }
-        
+
+
+        [Required(ErrorMessage = "This Field is Required")]
+        public string Role { get; set; }
+
     }
 }

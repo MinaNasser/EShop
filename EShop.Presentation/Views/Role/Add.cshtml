@@ -1,0 +1,138 @@
+﻿@{
+    ViewData["Title"] = "Add Role";
+    Layout = null;
+}
+@model List<RoleViewModel>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Add Role</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    <style>
+        :root {
+            --dark-blue: #023059;
+            --yellow: #efb036;
+            --light-grey: #f7f7f8;
+            --light-blue: #9197b3;
+        }
+
+        body {
+            background-color: var(--light-grey);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        h1 {
+            color: var(--dark-blue);
+            margin-bottom: 30px;
+        }
+
+        .btn-primary {
+            background-color: var(--dark-blue);
+            border: none;
+        }
+
+            .btn-primary:hover {
+                background-color: var(--yellow);
+                color: black;
+            }
+
+        .btn-warning {
+            background-color: var(--yellow);
+            border: none;
+            color: black;
+        }
+
+            .btn-warning:hover {
+                opacity: 0.8;
+            }
+
+        .btn-danger {
+            background-color: crimson;
+            border: none;
+        }
+
+        .alert-success {
+            background-color: var(--yellow);
+            color: black;
+            border: none;
+        }
+
+        .table thead {
+            background-color: var(--dark-blue);
+            color: white;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: var(--light-grey);
+        }
+
+        .form-label {
+            color: var(--dark-blue);
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+            margin-top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>System Roles</h1>
+
+        @if (ViewBag.Invalid == 1)
+        {
+            <div class="alert alert-danger" role="alert">
+                Sorry, cannot add this role!
+            </div>
+        }
+        else if (ViewBag.Invalid == 2)
+        {
+            <div class="alert alert-success" role="alert">
+                Role added successfully.
+            </div>
+        }
+
+        <form asp-action="Add" asp-controller="Role" method="post">
+            <div class="mb-3">
+                <label class="form-label">Role Name</label>
+                <input type="text" class="form-control" name="roleName" required>
+            </div>
+            <input type="submit" value="Add Role" class="btn btn-primary" />
+        </form>
+
+        <hr />
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Name</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>

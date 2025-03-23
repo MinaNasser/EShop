@@ -55,7 +55,8 @@ namespace EShop.Manegers
         public IQueryable<T> GetList(
             Expression<Func<T, bool>> filter = null)
         {
-            return table.Where(filter);
+            if(filter == null)return table.AsQueryable();
+            else return table.Where(filter);
         }
         public void Add(T newRow)
         {

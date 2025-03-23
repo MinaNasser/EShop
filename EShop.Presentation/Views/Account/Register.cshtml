@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Register";
+    List<SelectListItem> listItems = ViewBag.roles as List<SelectListItem>;
 }
 @model UserRegisterViewModel
 
@@ -38,6 +39,11 @@
                     <label asp-for="PasswordConfirmed" class="form-label">Confirm Password</label>
                     <input class="form-control" asp-for="PasswordConfirmed" type="password" placeholder="Confirm password">
                     <span asp-validation-for="PasswordConfirmed" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Role" class="form-label"></label>
+                    <select class="form-control" asp-for="Role" asp-items="@listItems"></select>
+                    <span asp-validation-for="Role" class="text-danger"></span>
                 </div>
 
                 <div class="d-grid">

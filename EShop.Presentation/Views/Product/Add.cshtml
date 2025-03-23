@@ -7,7 +7,7 @@
 
 <h1 class="mb-4" style="color: #023059;">@ViewBag.Title</h1>
 <h2 class="mb-4" style="color: #023059;">Add New Product</h2>
-
+<div asp-validation-summary="All" class="text-danger"></div>
 <form asp-action="add" asp-controller="product" method="post" enctype="multipart/form-data" style="background-color: white; padding: 30px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 700px;">
     <div class="mb-3">
         <label class="form-label" asp-for="Name" style="color: #023059;"></label>

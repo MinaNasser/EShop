@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿ @using System.Security.Claims
+@{
+    string username = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -31,7 +36,7 @@
             padding: 20px;
         }
 
-        .sidebar__logo a {
+        .sidebar__logo a,p {
             color: var(--yellow);
             font-size: 24px;
             font-weight: bold;
@@ -100,7 +105,8 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar__logo mb-4">
-            <a asp-controller="home" asp-action="ToDash">AdminPanel</a>
+            <p>@username</p>
+            <a asp-controller="home" asp-action="ToDash">AdminPanel </a>
         </div>
         <ul class="sidebar__menu">
             <!-- Categories Menu -->
