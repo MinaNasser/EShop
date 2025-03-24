@@ -26,32 +26,18 @@ namespace EShop.Managers
             
         }
 
-        public async Task<IdentityResult> Register(UserRegisterViewModel userRegisterVM)
+        public async Task<IdentityResult> Register(UserRegisterViewModel userRegister)
         {
-            IdentityResult res = await userManager.CreateAsync(userRegisterVM.ToModel(), userRegisterVM.Password);
+
+            var res = await userManager.CreateAsync(userRegister.ToModel(), userRegister.Password);
             if (res.Succeeded)
             {
-                User user = await userManager.FindByNameAsync(userRegisterVM.UserName);
-                res =await userManager.AddToRoleAsync(user,userRegisterVM.Role);
-                if (userRegisterVM.Role == "Vendor")
-                {
-                    Vendor vendor = new Vendor
-                    {
-                        UserId = user.Id
+                User user = await userManager.FindByNameAsync(userRegister.UserName);
 
-                    };
-                    vendorManager.Add(vendor);
-                }else if(userRegisterVM.Role == "Client")
-                {
-                    Client client = new Client
-                    {
-                        UserId = user.Id
-                    };
-                    clientManager.Add(client);
-                }
+                res = await userManager.AddToRoleAsync(user, userRegister.Role);
+                return res;
             }
             return res;
-            
         }
         public async Task<SignInResult> Login(UserLoginViewModel userLoginVM)
         {
@@ -62,6 +48,10 @@ namespace EShop.Managers
                 
             }
             return await signInManager.PasswordSignInAsync(userLoginVM.Method, userLoginVM.Password, true, true);
+        }
+        public async Task<User> FindByUserName(string userName)
+        {
+            return await userManager.FindByNameAsync(userName);
         }
         public async Task Logout()
         {

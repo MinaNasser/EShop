@@ -14,7 +14,7 @@ namespace EF_Core.Models
         public int CategoryId { get; set; }
         public virtual Category Category { get; set; }
 
-        public string VendorId { get; set; }
+        public string VendorId { get; set; } = "";
         public virtual Vendor Vendor { get; set; }
         public bool IsDelated { get; set; }
         //[NotMapped]

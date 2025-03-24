@@ -83,6 +83,20 @@ namespace EShop.Presentation.Controllers
                 searchText: searchText, price: price, pageNumber: pageNumber, pageSize: pageSize);
             return View(list);
         }
+        [Authorize(Roles = "Vendor")]
+        public IActionResult VendorList(string searchText = "", decimal price = 0,
+            int categoryId = 0, int pageNumber = 1,
+            int pageSize = 3)
+        {
+
+            ViewData["CategoriesList"] = GetCategories();
+            var myID = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            var list = productManager.Search(categoryId: categoryId, vendorId: myID,
+                searchText: searchText, price: price, pageNumber: pageNumber, pageSize: pageSize);
+            return View("index", list);
+        }
+
+
         [Authorize (Roles = "Vendor,Admin")]
 
         [HttpGet]
@@ -98,6 +112,7 @@ namespace EShop.Presentation.Controllers
         [HttpPost]
         public IActionResult Add(AddProductViewModel viewModel)
         {
+            viewModel.VendorId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
             if (ModelState.IsValid)
             {
                 // Save uploaded images
@@ -110,7 +125,7 @@ namespace EShop.Presentation.Controllers
                     }
                     viewModel.Paths.Add($"/Images/Products/{file.FileName}");
                 }
-                viewModel.VendorId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                
                 productManager.Add(viewModel.ToModel());
 
                 return RedirectToAction("Index");

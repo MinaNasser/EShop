@@ -1,8 +1,13 @@
-﻿<html>
-    <head>
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    </head>
-    <body>
+﻿@{
+
+    var role =User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value;
+}
+<html>
+<head>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @RenderSection("styles", false)
+</head>
+<body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Navbar</a>
@@ -17,20 +22,67 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="home" asp-action="privacy">Pricavy</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="home" asp-action="ToDash">Dashboard</a>
-                    </li>
+
+                    @if (User.Claims.Any())
+                    {
+                        @if (@role == "Client")
+                        {
+
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="product" asp-action="index">Products</a>
+                            </li>
+
+
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="home" asp-action="ToDash">Dashboard</a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Logout">Sign Out</a>
+                        </li>
+                    }
+                    else
+                    {
+
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Register">Join Us</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Login">Login</a>
+                        </li>
+                    }
 
 
 
                 </ul>
+                <a></a>
                 <form class="d-flex" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
+                
+
 
             </div>
+           
         </div>
+        @if (User.Claims.Any())
+        {
+
+            if (role != null && role == "Client")
+            {
+                <a asp-controller="CartItem" asp-action="Index" class="position-relative me-3">
+                    <i class="bi bi-cart3" style="font-size: 1.5rem; color: #023059;"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        @ViewBag.CartCount
+                    </span>
+                </a>
+            }
+        }
     </nav>
 
     <main class="container">
@@ -43,6 +95,7 @@
         </div>
     </footer>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("scripts", false)
     </body>
 
 </html>

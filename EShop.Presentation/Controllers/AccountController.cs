@@ -1,4 +1,5 @@
 ﻿using EShop.Managers;
+using EShop.Services;
 using EShop.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,12 +11,12 @@ namespace EShop.Presentation.Controllers
 {
     public class AccountController : Controller
     {
-        private AccountManager accountManager;
+        private AccountServices accountServices;
         private RoleManager roleManager;
 
-        public AccountController(AccountManager accountManager,RoleManager roleManager) 
+        public AccountController(AccountServices accountServices, RoleManager roleManager) 
         {
-            this.accountManager = accountManager;
+            this.accountServices = accountServices;
             this.roleManager = roleManager;
         }
         [HttpGet]
@@ -28,7 +29,7 @@ namespace EShop.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(UserRegisterViewModel userRegister)
         {
-            var result= await accountManager.Register(userRegister);
+            var result= await accountServices.CreateAccount(userRegister);
             if (ModelState.IsValid)
             {
                 if (result.Succeeded)
@@ -60,10 +61,10 @@ namespace EShop.Presentation.Controllers
         {
             if (ModelState.IsValid)
             {
-                var res = await accountManager.Login(vmodel);
+                var res = await accountServices.Login(vmodel);
                 if (res.Succeeded)
                 {
-                    var role = User.Claims.FirstOrDefault(C => C.Type == ClaimTypes.Role).Value;
+                    var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value;
                     if (role== "Vendor")
                     {
                         return RedirectToAction("AdminPanal", "Home");
@@ -90,7 +91,7 @@ namespace EShop.Presentation.Controllers
 
         public async Task<IActionResult> Logout()
         {
-            await accountManager.Logout();
+            await accountServices.Logout();
             return RedirectToAction("Index", "Home");
         }
 

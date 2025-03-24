@@ -73,5 +73,33 @@ namespace EShop.Manegers
             table.Remove(row);
             dbcontext.SaveChanges();
         }
+        public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> filter)
+        {
+            return await table.FirstOrDefaultAsync(filter);
+        }
+
+        public async Task<int> CountAsync(Expression<Func<T, bool>> filter)
+        {
+            return await table.CountAsync(filter);
+        }
+
+        public async Task<List<T>> GetListAsync(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = table;
+
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            if (filter != null)
+                query = query.Where(filter);
+
+            return await query.ToListAsync();
+        }
+
     }
 }

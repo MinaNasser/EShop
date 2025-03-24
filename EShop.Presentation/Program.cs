@@ -2,6 +2,7 @@ using EF_Core;
 using EF_Core.Models;
 using EShop.Managers;
 using EShop.Manegers;
+using EShop.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +30,9 @@ builder.Services.AddScoped(typeof(AccountManager));
 builder.Services.AddScoped(typeof(RoleManager));
 builder.Services.AddScoped(typeof(VendorManager));
 builder.Services.AddScoped(typeof(ClientManager));
+builder.Services.AddScoped(typeof(AccountServices));
+builder.Services.AddScoped<ICartItemService, CartItemService>();
+builder.Services.AddScoped<CartItemManager>();
 
 var app = builder.Build();
 

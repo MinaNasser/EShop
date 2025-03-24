@@ -1,25 +1,40 @@
-﻿@{
-    Layout = "_AdminLayout";
+﻿
+@{
+    string userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value;
+    string path = "";
+    if (userRole == "Client")
+    {
+        Layout = "_UserLayout";
+        path = "index";
+    }
+    else
+    {
+        Layout = "_AdminLayout";
+        path = "VendorList";
+    }
     var list = ViewData["CategoriesList"] as List<SelectListItem>;
     bool canNext = !(Model.PageNumber * Model.PageSize < Model.Total);
     bool canBack = Model.PageNumber <= 1;
 
     int PageCount = (int)Math.Ceiling((double)Model.Total / Model.PageSize);
 }
+
+
 @model PaginationViewModel<ProductDetailsViewModel>
 
 <h1 class="mt-4 mb-4" style="color: #023059;">Product List</h1>
+<div asp-validation-summary="All"></div>
 <div class="container mb-4">
-    <form asp-action="Index" method="get" class="row g-3" id="filterForm">
+    <form asp-action="@path" asp-controller="Product" method="get" class="row g-3" id="filterForm">
 
         <div class="col-md-4">
             <input type="text" name="searchText" class="form-control" placeholder="Search by name or description"
-                   value="@Context.Request.Query["searchText"]" oninput="autoSubmit()" />
+            value="@Context.Request.Query["searchText"]" oninput="autoSubmit()" />
         </div>
 
         <div class="col-md-2">
             <input type="number" name="price" class="form-control" placeholder="Max Price"
-                   value="@Context.Request.Query["price"]" oninput="autoSubmit()" />
+            value="@Context.Request.Query["price"]" oninput="autoSubmit()" />
         </div>
 
         <div class="col-md-3">
@@ -41,7 +56,7 @@
 
         <div class="col-md-2">
             <button type="submit" class="btn"
-                    style="background-color: #efb036; color: #023059; font-weight: bold;">
+            style="background-color: #efb036; color: #023059; font-weight: bold;">
                 Apply Filters
             </button>
         </div>
@@ -107,22 +122,37 @@
 
                     <!-- Buttons -->
                     <div class="card-footer text-center" style="background-color: #f7f7f8; border-top: 1px solid #9197b3;">
-                        <!-- Edit Product -->
-                        <a asp-controller="Product" asp-action="Edit" asp-route-id="@prd.Id" class="btn mb-2"
-                           style="background-color: #efb036; color: #023059; border: none; font-weight: bold; width: 45%;"
-                           onmouseover="this.style.backgroundColor='#023059'; this.style.color='white';"
-                           onmouseout="this.style.backgroundColor='#efb036'; this.style.color='#023059';">
-                            <i class="bi bi-pencil-square"></i> Edit
-                        </a>
+                        @if(userRole == "Client"){
+                            
+                            <form method="post" asp-controller="CartItem" asp-action="Add" class="d-inline" 
+                                  onsubmit="return confirm('Are you sure you want to add this product to the cart?');">
+                                <input type="hidden" name="id" value="@prd.Id" />
+                                <button type="submit" class="btn mb-2" 
+                                        style="background-color: #023059; color: white; border: none; width: 45%; font-weight: bold;">
+                                    <i class="bi bi-cart-plus"></i> AddToCart
+                                </button>
+                            </form>
 
-                        <!-- Delete Product -->
-                        <form method="Get" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this product?');">
-                            <input type="hidden" name="id" value="@prd.Id" />
-                            <button asp-controller="Product" asp-action="Delete" type="submit" asp-route-id="@prd.Id"
-                                    class="btn mb-2" style="background-color: #023059; color: white; border: none; width: 45%; font-weight: bold;">
-                                <i class="bi bi-trash"></i> Delete
-                            </button>
-                        </form>
+
+
+                        }else{
+                            <!-- Edit Product -->
+                            <a asp-controller="Product" asp-action="Edit" asp-route-id="@prd.Id" class="btn mb-2"
+                               style="background-color: #efb036; color: #023059; border: none; font-weight: bold; width: 45%;"
+                               onmouseover="this.style.backgroundColor='#023059'; this.style.color='white';"
+                               onmouseout="this.style.backgroundColor='#efb036'; this.style.color='#023059';">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </a>
+
+                            <!-- Delete Product -->
+                            <form method="Get" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                                <input type="hidden" name="id" value="@prd.Id" />
+                                <button asp-controller="Product" asp-action="Delete" type="submit" asp-route-id="@prd.Id"
+                                        class="btn mb-2" style="background-color: #023059; color: white; border: none; width: 45%; font-weight: bold;">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </form>
+                        }
                     </div>
 
                 </div>
