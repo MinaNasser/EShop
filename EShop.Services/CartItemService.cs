@@ -30,6 +30,25 @@ namespace EShop.Services
         {
             await _cartItemManager.RemoveItemAsync(cartItemId);
         }
+        public async Task IncreaseQuantityAsync(int cartItemId)
+        {
+            var item = await _cartItemManager.GetByIdAsync(cartItemId);
+            if (item != null)
+            {
+                item.Quantity += 1;
+                await _cartItemManager.UpdateAsync(item);
+            }
+        }
+
+        public async Task DecreaseQuantityAsync(int cartItemId)
+        {
+            var item = await _cartItemManager.GetByIdAsync(cartItemId);
+            if (item != null && item.Quantity > 1)
+            {
+                item.Quantity -= 1;
+                await _cartItemManager.UpdateAsync(item);
+            }
+        }
 
     }
 }

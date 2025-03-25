@@ -1,10 +1,11 @@
 ﻿@{
 
-    var role =User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value;
+    var role =User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 }
 <html>
 <head>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     @RenderSection("styles", false)
 </head>
 <body>
@@ -70,19 +71,23 @@
             </div>
            
         </div>
-        @if (User.Claims.Any())
-        {
-
-            if (role != null && role == "Client")
+        <div>
+            @if (User.Claims.Any())
             {
-                <a asp-controller="CartItem" asp-action="Index" class="position-relative me-3">
-                    <i class="bi bi-cart3" style="font-size: 1.5rem; color: #023059;"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        @ViewBag.CartCount
-                    </span>
-                </a>
+
+                if (role != null && role == "Client")
+                {
+                    <a asp-controller="CartItem" asp-action="Index" class="position-relative me-3">
+                        <i class="bi bi-cart3" style="font-size: 1.5rem; color: #023059;"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            @ViewBag.CartCount
+                        </span>
+                    </a>
+                }
             }
-        }
+
+        </div>
+        
     </nav>
 
     <main class="container">

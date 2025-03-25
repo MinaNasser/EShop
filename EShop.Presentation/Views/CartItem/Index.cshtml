@@ -22,7 +22,19 @@ else
             {
                 <tr>
                     <td>@item.Product.Name</td>
-                    <td>@item.Quantity</td>
+                    <td>
+
+                        <div class="d-flex align-items-center">
+                            @*<form method="post" asp-action="DecreaseQuantity" asp-route-id="@item.Id" class="me-2">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">-</button>
+                            </form>*@
+                            <span>@item.Quantity</span>
+                            @*
+                            <form method="post" asp-action="IncreaseQuantity" asp-route-id="@item.Id" class="ms-2">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">+</button>
+                            </form>*@
+                        </div>
+                    </td>
                     <td>@item.Product.Price.ToString("C")</td>
                     <td>
                         <form method="post" asp-action="Remove" asp-route-id="@item.Id" style="display:inline;">

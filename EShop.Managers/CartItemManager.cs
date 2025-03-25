@@ -2,11 +2,7 @@
 using EF_Core.Models;
 using EShop.Manegers;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace EShop.Managers
 {
@@ -55,6 +51,17 @@ namespace EShop.Managers
                 Delete(item);
             }
         }
+        public async Task<CartItem> GetByIdAsync(int id)
+        {
+            return await GetList().Include(c => c.Product).FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task UpdateAsync(CartItem cartItem)
+        {
+            Edit(cartItem);
+            await Commit(); 
+        }
+
 
     }
 

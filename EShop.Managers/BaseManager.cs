@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace EShop.Manegers
 {
@@ -61,17 +62,17 @@ namespace EShop.Manegers
         public void Add(T newRow)
         {
             table.Add(newRow);
-            dbcontext.SaveChanges();
+            Commit();
         }
         public void Edit(T newRow)
         {
             table.Update(newRow);
-            dbcontext.SaveChanges();
+            Commit();
         }
         public void Delete(T row)
         {
             table.Remove(row);
-            dbcontext.SaveChanges();
+            Commit();
         }
         public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> filter)
         {
@@ -100,6 +101,11 @@ namespace EShop.Manegers
 
             return await query.ToListAsync();
         }
+        public async Task<int> Commit()
+        {
+            return await dbcontext.SaveChangesAsync();
+        }
+
 
     }
 }

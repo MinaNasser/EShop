@@ -19,7 +19,7 @@ namespace EShop.Presentation.Controllers
         {
             var clientId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var cartItems = await _cartService.GetCartItemsByClientIdAsync(clientId);
-            ViewBag.CartCount = cartItems;
+            ViewBag.CartCount = cartItems.Count;
             return View(cartItems);
         }
 
@@ -43,6 +43,20 @@ namespace EShop.Presentation.Controllers
             await _cartService.RemoveItemAsync(id); // هنعملها في السيرفيس
             return RedirectToAction("Index");
         }
+        [HttpPost]
+        public async Task<IActionResult> IncreaseQuantity(int id)
+        {
+            await _cartService.IncreaseQuantityAsync(id);
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DecreaseQuantity(int id)
+        {
+            await _cartService.DecreaseQuantityAsync(id);
+            return RedirectToAction("Index");
+        }
+
 
     }
 }
