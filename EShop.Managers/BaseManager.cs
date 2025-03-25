@@ -22,7 +22,7 @@ namespace EShop.Manegers
 
         public IQueryable<T> Get(
             Expression<Func<T, bool>> filter = null,
-            int pageSize = 4,
+            int pageSize = 2,
             int pageNumber = 1)
         {
             IQueryable<T> quary = table.AsQueryable();
