@@ -53,6 +53,20 @@ namespace EShop.Managers
         {
             return await userManager.FindByNameAsync(userName);
         }
+        public async Task<User> FindByEmail(string email)
+        {
+            return await userManager.FindByEmailAsync(email);
+        }
+
+        public async Task<IList<string>> GetUserRoles(User user)
+        {
+            return await userManager.GetRolesAsync(user);
+        }
+
+        public async Task<IdentityResult> AsignUserToRole(User user, string newrole)
+        {
+            return await userManager.AddToRoleAsync(user, newrole);
+        }
         public async Task Logout()
         {
             await signInManager.SignOutAsync();
