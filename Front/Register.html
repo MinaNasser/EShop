@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="styles.css"> <!-- ملف CSS المخصص -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .register-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 { margin-bottom: 20px; color: #333; }
+
+        label { display: block; text-align: left; font-weight: bold; margin-top: 10px; }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        button:hover { background-color: #218838; }
+
+        #errorMsg {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="register-container">
+        <h2>Register</h2>
+        <form id="registerForm">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" placeholder="Enter your full name" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
+
+            <label for="phoneNumber">Phone Number:</label>
+            <input type="tel" id="phoneNumber" placeholder="Enter your phone number" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Enter your password" required>
+
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" placeholder="Confirm your password" required>
+
+            <label for="role">Select Role:</label>
+            <select id="role" required>
+                <option value="Client">Client</option>
+                <option value="Vendor">Vendor</option>
+            </select>
+
+            <button type="submit">Register</button>
+        </form>
+
+        <p id="errorMsg">Error: Registration failed!</p>
+    </div>
+
+    <script>
+        document.getElementById("registerForm").addEventListener("submit", async function (event) {
+            event.preventDefault(); // منع إعادة تحميل الصفحة
+
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const phoneNumber = document.getElementById("phoneNumber").value.trim();
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+            const role = document.getElementById("role").value;
+            const errorMsg = document.getElementById("errorMsg");
+
+            // التحقق من تطابق كلمات المرور
+            if (password !== confirmPassword) {
+                errorMsg.innerText = "Passwords do not match!";
+                errorMsg.style.display = "block";
+                return;
+            }
+
+            errorMsg.style.display = "none"; // إخفاء رسالة الخطأ
+
+            try {
+                const response = await fetch("http://localhost:5044/api/Account/Register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        UserName: name,  // ✅ تم التعديل ليطابق الـ API
+                        Email: email,
+                        Password: password,
+                        PasswordConfirmed: confirmPassword, // ✅ مطابق للـ API
+                        PhoneNumber: phoneNumber,  // ✅ تمت الإضافة لأنه مطلوب
+                        Role: role
+                    })
+                });
+
+                const responseData = await response.json();
+
+                if (!response.ok) {
+                    console.error("Error Response:", responseData); // ✅ طباعة الخطأ في الكونسول
+                    errorMsg.innerText = responseData.Massage || "Registration failed! Please try again.";
+                    errorMsg.style.display = "block";
+                    return;
+                }
+
+                alert("Registration successful!");
+                window.location.href = "login.html"; // ✅ توجيه المستخدم بعد النجاح
+
+            } catch (error) {
+                console.error("Registration error:", error);
+                errorMsg.innerText = "Something went wrong! Please try again.";
+                errorMsg.style.display = "block";
+            }
+        });
+
+        // دالة لفك تشفير التوكن JWT
+        function parseJwt(token) {
+            try {
+                return JSON.parse(atob(token.split('.')[1])); 
+            } catch (e) {
+                return null;
+            }
+        }
+    </script>
+
+</body>
+</html>

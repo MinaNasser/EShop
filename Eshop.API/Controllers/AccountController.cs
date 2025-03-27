@@ -63,55 +63,52 @@ namespace EShop.API.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(UserLoginViewModel vmodel)
+        [Route("Login")]
+        public async Task<IActionResult> Login( UserLoginViewModel vmodel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return BadRequest(new
+                {
+                    Message = string.Join(" | ", errors),
+                    Status = 400
+                });
+            }
+
+            try
             {
                 var res = await accountService.GenerateToken(vmodel);
-                if (res == null)
+
+                if (string.IsNullOrEmpty(res))
                 {
-                    return new JsonResult(new
+                    return BadRequest(new
                     {
-                        Massage = "Sorry Invalid Email Or User Name Or Password",
+                        Message = "Sorry, Invalid Email, Username, or Password.",
                         Status = 400
                     });
                 }
-                else if (res == "")
-                {
-                    return new JsonResult(new
-                    {
-                        Massage = "Sorry try again Later!!!! Your Accout under Review",
-                        Status = 400
-                    });
-                }
-                else
-                {
-                    var role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role).Value;
-                    return new JsonResult(new
-                    {
-                        Massage = "Logged in Successfully",
-                        Status = 200,
-                        Token = res,
-                        Role = role
-                    });
 
-                }
+                var roleClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+                string role = roleClaim?.Value ?? "Unknown";
+
+                return Ok(new
+                {
+                    Message = "Logged in Successfully",
+                    Status = 200,
+                    Token = res,
+                    Role = role
+                });
             }
-            StringBuilder stringBuilder1 = new StringBuilder();
-            foreach (var item in ModelState.Values)
+            catch (Exception ex)
             {
-                foreach (var err in item.Errors)
+                return StatusCode(500, new
                 {
-                    stringBuilder1.Append(err.ErrorMessage);
-                }
+                    Message = "An unexpected error occurred. Please try again later.",
+                    Error = ex.Message,
+                    Status = 500
+                });
             }
-
-            return new JsonResult(new
-            {
-                Massage = stringBuilder1.ToString(),
-                Status = 400
-            });
-
         }
 
         public async Task<IActionResult> Signout()
@@ -123,5 +120,116 @@ namespace EShop.API.Controllers
                 Status = 200
             });
         }
+
     }
 }
+
+
+
+//using EShop.Services;
+//using EShop.ViewModels;
+//using Microsoft.AspNetCore.Mvc;
+//using System.Text;
+
+//namespace EShop.API.Controllers
+//{
+//    [ApiController]
+//    [Route("api/[controller]")]
+//    public class AccountController : ControllerBase
+//    {
+//        private readonly AccountServices accountService;
+
+//        public AccountController(AccountServices _accountServices)
+//        {
+//            accountService = _accountServices;
+//        }
+
+//        [HttpPost("Register")]
+//        public async Task<IActionResult> Register(UserRegisterViewModel user)
+//        {
+//            if (!ModelState.IsValid)
+//            {
+//                return BadRequest(new
+//                {
+//                    Message = "Invalid input",
+//                    Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))
+//                });
+//            }
+
+//            var res = await accountService.CreateAccount(user);
+//            if (res.Succeeded)
+//            {
+//                return Ok(new
+//                {
+//                    Message = "Your account has been successfully created. Please log in.",
+//                    Status = 200
+//                });
+//            }
+//            else
+//            {
+//                return BadRequest(new
+//                {
+//                    Message = "Registration failed",
+//                    Errors = res.Errors.Select(err => err.Description)
+//                });
+//            }
+//        }
+
+//        [HttpPost("Login")]
+//        public async Task<IActionResult> Login(UserLoginViewModel vmodel)
+//        {
+//            if (!ModelState.IsValid)
+//            {
+//                return BadRequest(new
+//                {
+//                    Message = "Invalid input",
+//                    Errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage))
+//                });
+//            }
+
+//            var token = await accountService.GenerateToken(vmodel);
+//            if (string.IsNullOrEmpty(token))
+//            {
+//                return BadRequest(new
+//                {
+//                    Message = "Invalid username or password, or account is under review.",
+//                    Status = 400
+//                });
+//            }
+
+//            // استخراج الدور من التوكن JWT
+//            var role = ExtractRoleFromJwt(token);
+
+//            return Ok(new
+//            {
+//                Message = "Logged in successfully",
+//                Status = 200,
+//                Token = token,
+//                Role = role
+//            });
+//        }
+
+//        [HttpPost("Signout")]
+//        public async Task<IActionResult> Signout()
+//        {
+//            await accountService.Logout();
+//            return Ok(new
+//            {
+//                Message = "Signed out successfully",
+//                Status = 200
+//            });
+//        }
+
+//        // دالة لاستخراج الدور من التوكن JWT
+//        private string ExtractRoleFromJwt(string token)
+//        {
+//            var jwtParts = token.Split('.');
+//            if (jwtParts.Length < 2) return "Unknown";
+
+//            var payload = Encoding.UTF8.GetString(Convert.FromBase64String(jwtParts[1]));
+//            var claims = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(payload);
+
+//            return claims != null && claims.ContainsKey("role") ? claims["role"].ToString() : "Unknown";
+//        }
+//    }
+//}

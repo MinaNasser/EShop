@@ -7,6 +7,7 @@ using System.Security.Claims;
 
 namespace EShop.API.Controllers
 {
+    //api/Product/products
     [ApiController]
     [Route("api/{Controller}")]
     public class ProductController : ControllerBase
@@ -20,7 +21,8 @@ namespace EShop.API.Controllers
 
         //    .... /product/index
         //    .... /product
-        [Route("index")]
+        //[Route("index")]
+        [Route("products")]
         public IActionResult Index(string searchText = "", decimal price = 0,
             int categoryId = 0, string vendorId = "", int pageNumber = 1,
             int pageSize = 5)
@@ -79,6 +81,28 @@ namespace EShop.API.Controllers
             }
 
             return Ok(new { massage = "Data is invaild" });
+        }
+
+
+        [HttpGet("Details/{id}")]
+        //[Route("GetById/{id}")]
+        public IActionResult GetById(int id)
+        {
+            var product = ProductManager.GetList(i => i.Id == id).FirstOrDefault();
+            ProductDetailsViewModel reponse = new ProductDetailsViewModel();
+            if (product != null)
+            {
+                reponse = product.ToDetailsVModel();
+            }
+            return new JsonResult(
+                new APIResault<ProductDetailsViewModel>
+                {
+                    Status = 200,
+                    Success = product == null ? false : true,
+                    Massage = product == null ? "Sorry There is no Product with this Id" : "Here Your Product",
+                    Data = reponse
+                }
+            );
         }
     }
 }

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products | Pointai</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .card img {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .loading-text {
+            text-align: center;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1 class="mb-4 text-center text-primary">Products</h1>
+        <p id="loading-text" class="loading-text">Loading products...</p>
+        <div id="products-list" class="row">
+            <!-- المنتجات ستتم إضافتها هنا ديناميكيًا -->
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container">
+        <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toast-message"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const productsList = document.getElementById("products-list");
+            const loadingText = document.getElementById("loading-text");
+            const role = localStorage.getItem("role");
+
+            fetch("http://localhost:5044/api/Product/products")
+                .then(response => response.json())
+                .then(products => {
+                    loadingText.style.display = "none";
+
+                    if (products.length === 0) {
+                        productsList.innerHTML = `<p class="text-center text-muted">No products available.</p>`;
+                        return;
+                    }
+
+                    products.forEach(product => {
+                        const productCard = document.createElement("div");
+                        productCard.className = "col-md-4 mb-4 product-card";
+                        productCard.setAttribute("data-id", product.id);
+                        productCard.innerHTML = `
+                            <div class="card shadow-sm">
+                                <img src="${product.imageUrl}" class="card-img-top" alt="${product.name}">
+                                <div class="card-body">
+                                    <h5 class="card-title">${product.name}</h5>
+                                    <p class="card-text text-muted">${product.description}</p>
+                                    <p class="card-text"><strong>Price:</strong> $${product.price}</p>
+                                    <div class="d-grid gap-2">
+                                        ${role === "Client" ? `<button class="btn btn-primary" onclick="addToCart(${product.id})">Add to Cart</button>` : ''}
+                                        ${role === "Vendor" ? `
+                                            <button class="btn btn-warning" onclick="editProduct(${product.id})">Edit</button>
+                                            <button class="btn btn-danger" onclick="deleteProduct(${product.id})">Delete</button>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        productsList.appendChild(productCard);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error fetching products:", error);
+                    loadingText.innerText = "Failed to load products. Please try again.";
+                });
+        });
+
+        function addToCart(productId) {
+            fetch(`http://localhost:5044/api/CartItem/add?id=${productId}`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                }
+            })
+
+                .then(response => {
+                    if (!response.ok) throw new Error("Failed to add product to cart.");
+                    return response.json();
+                })
+                .then(data => showToast("✅ Added to cart successfully!"))
+                .catch(error => showToast("❌ Failed to add to cart!", "error"));
+        }
+
+        function editProduct(productId) {
+            window.location.href = `edit-product.html?id=${productId}`;
+        }
+
+        function deleteProduct(productId) {
+            if (confirm("Are you sure you want to delete this product?")) {
+                fetch(`http://localhost:5044/api/Product/${productId}`, {
+                    method: "DELETE",
+                    headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+                })
+                    .then(response => {
+                        if (!response.ok) throw new Error("Failed to delete product.");
+                        return response.json();
+                    })
+                    .then(() => {
+                        document.querySelector(`.product-card[data-id="${productId}"]`).remove();
+                        showToast("✅ Product deleted successfully!", "success");
+                    })
+                    .catch(error => showToast("❌ Failed to delete product!", "error"));
+            }
+        }
+
+        function showToast(message, type = "success") {
+            const toastEl = document.getElementById("toast");
+            const toastMessage = document.getElementById("toast-message");
+            toastMessage.innerText = message;
+            toastEl.classList.remove("bg-success", "bg-danger");
+            toastEl.classList.add(type === "success" ? "bg-success" : "bg-danger");
+
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

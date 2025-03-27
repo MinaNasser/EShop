@@ -8,16 +8,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using EShop.API;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllers(i =>
+{
+    i.Filters.Add<GenaralExceptionFilter>();
+});
 
-builder.Services.AddControllers();
 builder.Services.AddDbContext<EShopContext>
     (i => i.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("DBEshop")));
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<EShopContext>();
+
 builder.Services.AddScoped(typeof(ProductManager));
 builder.Services.AddScoped(typeof(CategoryManager));
 builder.Services.AddScoped(typeof(RoleManager));
@@ -45,22 +51,29 @@ builder.Services.AddAuthentication(
     {
         ValidateAudience = false,
         ValidateIssuer = false,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JWT:PrivateKey"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JWT:PrivateKey"])),
+        ValidateLifetime = true, // ÇáÊÍÞÞ ãä ÇäÊåÇÁ ÕáÇÍíÉ ÇáÊæßä
+        ClockSkew = TimeSpan.Zero // ÅáÛÇÁ ÇáÝÇÑÞ ÇáÒãäí ÇáÇÝÊÑÇÖí (5 ÏÞÇÆÞ)
     };
 });
 
 
+builder.Services.AddCors(option => option.AddDefaultPolicy
+    (
+        i => i.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin()
+    )
+);
 
 
 var app = builder.Build();
+app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 app.UseRouting();
-
+app.UseCors();
 //app.UseAuthorization();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseStaticFiles();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=index}");

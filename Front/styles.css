@@ -1,0 +1,16 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Client Dashboard Styles */
+.client-dashboard {
+    background-color: #e3f2fd; /* Light Blue */
+    color: #0d6efd; /* Bootstrap Primary Blue */
+}
+
+/* Vendor Dashboard Styles */
+.vendor-dashboard {
+    background-color: #ffebee; /* Light Red */
+    color: #d32f2f; /* Bootstrap Danger Red */
+}

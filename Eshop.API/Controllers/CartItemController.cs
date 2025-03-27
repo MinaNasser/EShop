@@ -1,7 +1,6 @@
 ﻿using EShop.Services;
 using EShop.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -9,7 +8,7 @@ namespace EShop.API.Controllers
 {
     [Authorize(Roles = "Client")]
     [ApiController]
-    [Route("api/{controller}")]
+    [Route("api/cart")]
     public class CartItemController : ControllerBase
     {
         private readonly ICartItemService _cartService;
@@ -18,15 +17,14 @@ namespace EShop.API.Controllers
         {
             _cartService = cartService;
         }
-        //[Route("add")]
-        [Route("index")]
-        public async Task<IActionResult> Index()
+
+        // Get Cart Items
+        [HttpGet("list")]
+        public async Task<IActionResult> GetCartItems()
         {
             var clientId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (clientId == null)
-            {
                 return Unauthorized("User is not authenticated.");
-            }
 
             var cartItems = await _cartService.GetCartItemsByClientIdAsync(clientId);
 
@@ -40,42 +38,47 @@ namespace EShop.API.Controllers
             return Ok(cartItemDTOs);
         }
 
-
-        [HttpPost]
-        [Route("add")]
-        public async Task<IActionResult> Add(int id)
+        // Add to Cart
+        [HttpPost("add/{id}")]
+        public async Task<IActionResult> AddToCart(int id)
         {
             var clientId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             await _cartService.AddToCartAsync(id, clientId);
-            return Ok(new { massage = "Successfull added" });
+            return Ok(new { message = "Successfully added" });
         }
-        [HttpGet]
+
+        // Get Cart Count
+        [HttpGet("count")]
+
         public async Task<IActionResult> GetCartCount()
         {
             var clientId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var count = await _cartService.GetCartCountAsync(clientId);
-            return Ok(new { count = count });
+            return Ok(new { count });
         }
-        [HttpPost]
-        public async Task<IActionResult> Remove(int id)
+
+        // Remove Item from Cart
+        [HttpDelete("remove/{id}")]
+        public async Task<IActionResult> RemoveItem(int id)
         {
-            await _cartService.RemoveItemAsync(id); // هنعملها في السيرفيس
-            return Ok();
+            await _cartService.RemoveItemAsync(id);
+            return Ok(new { message = "Item removed" });
         }
-        [HttpPost]
+
+        // Increase Quantity
+        [HttpPut("increase/{id}")]
         public async Task<IActionResult> IncreaseQuantity(int id)
         {
             await _cartService.IncreaseQuantityAsync(id);
-            return Ok();
+            return Ok(new { message = "Quantity increased" });
         }
 
-        [HttpPost]
+        // Decrease Quantity
+        [HttpPut("decrease/{id}")]
         public async Task<IActionResult> DecreaseQuantity(int id)
         {
             await _cartService.DecreaseQuantityAsync(id);
-            return Ok();
+            return Ok(new { message = "Quantity decreased" });
         }
-
-
     }
 }
