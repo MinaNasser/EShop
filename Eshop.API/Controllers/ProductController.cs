@@ -23,7 +23,7 @@ namespace EShop.API.Controllers
         //    .... /product
         //[Route("index")]
         [Route("products")]
-        public IActionResult Index(string searchText = "", decimal price = 0,
+        public IActionResult Index(string searchText = "", double price = 0,
             int categoryId = 0, string vendorId = "", int pageNumber = 1,
             int pageSize = 5)
         {
@@ -35,7 +35,7 @@ namespace EShop.API.Controllers
 
         [Authorize(Roles = "Vendor")]
         [Route("VendorList")]
-        public IActionResult VendorList(string searchText = "", decimal price = 0,
+        public IActionResult VendorList(string searchText = "", double price = 0,
             int categoryId = 0, int pageNumber = 1,
             int pageSize = 3)
         {

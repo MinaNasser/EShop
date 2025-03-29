@@ -25,7 +25,7 @@ namespace EShop.Managers
             if (existing != null)
             {
                 existing.Quantity += 1;
-                Edit(existing); // Use BaseManager's Edit
+                Edit(existing);
             }
             else
             {
@@ -35,9 +35,10 @@ namespace EShop.Managers
                     Quantity = 1,
                     ClientId = clientId
                 };
-                Add(cartItem); // Use BaseManager's Add
+                Add(cartItem);
             }
         }
+
 
         public async Task<int> GetCartCountAsync(string clientId)
         {

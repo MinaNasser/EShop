@@ -26,7 +26,7 @@ namespace EShop.ViewModels
 
 
         [Required (ErrorMessage = "Please Provide valid Product Price Start from 5")]
-        public decimal Price { get; set; }
+        public double Price { get; set; }
 
 
         [Required(ErrorMessage = "Please Provide valid Product Category")]

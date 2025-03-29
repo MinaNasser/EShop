@@ -1,0 +1,334 @@
+/* ==========================  
+   Buttons Styles
+========================== */
+
+.General-hover-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 10px;
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+.General-hover-btn:hover {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.General-outlined-btn {
+    background: transparent;
+    color: var(--primary-color);
+    position: relative;
+    overflow: hidden;
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+.General-outlined-btn:hover {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.btn-custom {
+    background-color: var(--secondary-color);
+    color:  var(--primary-color);
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    border-radius: 8px;
+}
+
+.btn-custom.active,
+.btn-custom:hover {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+}
+
+.btn-option {
+    width: 48%;
+    padding: 12px;
+    font-weight: bold;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-option.active {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+/* ==========================  
+   Input Fields Styles
+========================== */
+.General-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 300px;
+    margin: 10px 0;
+}
+
+.General-input-wrapper i {
+    position: absolute;
+    left: 10px;
+    color: var(--accent-color);
+}
+
+.General-custom-input {
+    width: 100%;
+    padding: 12px 40px;
+    font-size: 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    outline: none;
+}
+
+.General-custom-input:focus {
+    border-color: var(--primary-color);
+}
+
+/* الوضع الداكن */
+.General-dark-input {
+    background-color: var(--primary-color);
+    color: white;
+    border: 2px solid var(--secondary-color);
+}
+
+.General-dark-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* الوضع الفاتح */
+.General-light-input {
+    background-color: var(--hover-color);
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+}
+
+.General-light-input::placeholder {
+    color: var(--accent-color);
+}
+
+/* ==========================  
+   Icons Styles
+========================== */
+.General-icon-dark {
+    color: var(--primary-color);
+    font-size: 40px;
+    transition: color 0.3s ease-in-out;
+}
+
+.General-icon-light {
+    color: var(--secondary-color);
+    font-size: 40px;
+    transition: color 0.3s ease-in-out;
+}
+
+.General-icon-dark:hover,
+.General-icon-light:hover {
+    color: var(--hover-color);
+}
+
+/* ==========================  
+   Dropdown Styles
+========================== */
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-btn {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid var(--primary-color);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease-in-out;
+}
+
+.dropdown-btn:hover {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--background-color);
+    min-width: 180px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.dropdown-content a {
+    color: var(--primary-color);
+    padding: 12px 16px;
+    display: block;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.3s ease-in-out;
+}
+
+.dropdown-content a:hover {
+    background-color: var(--secondary-color);
+    color: var(--hover-color);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* ==========================  
+   Sidebar Styles
+========================== */
+.Sidebar-icon {
+    color: var(--primary-color);
+    font-size: 24px;
+    padding: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.Sidebar-icon.active,
+.Sidebar-icon:hover {
+    background-color: var(--secondary-color);
+    color: white;
+    border-radius: 8px;
+}
+
+.Sidebar-label {
+    color: var(--primary-color);
+    font-weight: bold;
+    margin-left: 10px;
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+}
+.General-card {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.General-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+.General-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.General-modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.sidebar {
+    background-color: var(--primary-color);
+    min-height: 100vh;
+    color: white;
+}
+
+.sidebar .nav-link {
+    color: var(--text-muted);
+}
+
+.sidebar .nav-link.active {
+    background-color: #efb036;
+    color: #023059;
+    border-radius: 12px;
+    padding: 10px;
+}
+.sidebar .nav-link:hover {
+    background-color: #efb036;
+    color: #023059;
+    border-radius: 12px;
+    padding: 10px;
+}
+.sidebar .nav-link {
+    color: #9197b3;
+    margin-bottom: 10px;
+}
+
+.card-summary {
+    border-radius: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    background-color: white;
+}
+
+.quick-action-card {
+    background-color: white;
+    border-radius: 20px;
+    padding: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.quick-action-card i {
+    font-size: 1.5rem;
+    color: var(--secondary-color);
+}
+
+.btn-status {
+    border-radius: 20px;
+    padding: 5px 15px;
+}
+
+
+.btn-save {
+    background-color: #efb036;
+    color: #023059;
+    border-radius: 20px;
+    padding: 10px 20px;
+}
+.General-hover-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 12px;
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+    border: none;
+  }
+  
+  .General-hover-btn:hover {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+  }
+  

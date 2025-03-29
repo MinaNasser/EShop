@@ -18,67 +18,150 @@ namespace EShop.API.Controllers
             _cartService = cartService;
         }
 
-        // Get Cart Items
+        // استخراج ClientId في كل استدعاء للراوتر
+        private string? ClientId => User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        /// <summary>
+        /// جلب جميع عناصر السلة الخاصة بالمستخدم
+        /// </summary>
         [HttpGet("list")]
         public async Task<IActionResult> GetCartItems()
         {
-            var clientId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (clientId == null)
-                return Unauthorized("User is not authenticated.");
-
-            var cartItems = await _cartService.GetCartItemsByClientIdAsync(clientId);
-
-            var cartItemDTOs = cartItems.Select(c => new CartItemViewModel
+            try
             {
-                Id = c.Id,
-                ProductId = c.ProductID,
-                ProductName = c.Product?.Name
-            });
+                if (string.IsNullOrEmpty(ClientId))
+                    return Unauthorized(new { message = "User is not authenticated." });
 
-            return Ok(cartItemDTOs);
+                var cartItems = await _cartService.GetCartItemsByClientIdAsync(ClientId);
+
+                var cartItemDTOs = cartItems.Select(c => new CartItemViewModel
+                {
+                    Id = c.Id,
+                    ProductId = c.ProductID,
+                    ProductName = c.Product?.Name,
+                    Quantity = c.Quantity,
+                    SupPrice = c.Product?.Price ?? 0,
+                    ProductImage = c.Product?.Attachments?.FirstOrDefault()?.Image ?? "/images/default-product.png"
+                });
+
+                return Ok(cartItemDTOs);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", error = ex.Message });
+            }
         }
 
-        // Add to Cart
+        /// <summary>
+        /// إضافة منتج إلى السلة
+        /// </summary>
         [HttpPost("add/{id}")]
         public async Task<IActionResult> AddToCart(int id)
         {
-            var clientId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _cartService.AddToCartAsync(id, clientId);
-            return Ok(new { message = "Successfully added" });
+            if (id <= 0)
+                return BadRequest(new { message = "Invalid product ID." });
+
+            try
+            {
+                if (string.IsNullOrEmpty(ClientId))
+                    return Unauthorized(new { message = "User is not authenticated." });
+
+                await _cartService.AddToCartAsync(id, ClientId);
+                return Ok(new { message = "Successfully added to cart" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to add item.", error = ex.Message });
+            }
         }
 
-        // Get Cart Count
+        /// <summary>
+        /// جلب عدد المنتجات داخل السلة
+        /// </summary>
         [HttpGet("count")]
-
         public async Task<IActionResult> GetCartCount()
         {
-            var clientId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var count = await _cartService.GetCartCountAsync(clientId);
-            return Ok(new { count });
+            try
+            {
+                if (string.IsNullOrEmpty(ClientId))
+                    return Unauthorized(new { message = "User is not authenticated." });
+
+                var count = await _cartService.GetCartCountAsync(ClientId);
+                return Ok(new { count });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to get cart count.", error = ex.Message });
+            }
         }
 
-        // Remove Item from Cart
+        /// <summary>
+        /// إزالة منتج من السلة
+        /// </summary>
         [HttpDelete("remove/{id}")]
         public async Task<IActionResult> RemoveItem(int id)
         {
-            await _cartService.RemoveItemAsync(id);
-            return Ok(new { message = "Item removed" });
+            if (id <= 0)
+                return BadRequest(new { message = "Invalid item ID." });
+
+            try
+            {
+                if (string.IsNullOrEmpty(ClientId))
+                    return Unauthorized(new { message = "User is not authenticated." });
+
+                await _cartService.RemoveItemAsync(id);
+                return Ok(new { message = "Item removed successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to remove item.", error = ex.Message });
+            }
         }
 
-        // Increase Quantity
+        /// <summary>
+        /// زيادة الكمية لمنتج معين داخل السلة
+        /// </summary>
         [HttpPut("increase/{id}")]
         public async Task<IActionResult> IncreaseQuantity(int id)
         {
-            await _cartService.IncreaseQuantityAsync(id);
-            return Ok(new { message = "Quantity increased" });
+            if (id <= 0)
+                return BadRequest(new { message = "Invalid item ID." });
+
+            try
+            {
+                if (string.IsNullOrEmpty(ClientId))
+                    return Unauthorized(new { message = "User is not authenticated." });
+
+                await _cartService.IncreaseQuantityAsync(id);
+                return Ok(new { message = "Quantity increased successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to increase quantity.", error = ex.Message });
+            }
         }
 
-        // Decrease Quantity
+        /// <summary>
+        /// تقليل الكمية لمنتج معين داخل السلة
+        /// </summary>
         [HttpPut("decrease/{id}")]
         public async Task<IActionResult> DecreaseQuantity(int id)
         {
-            await _cartService.DecreaseQuantityAsync(id);
-            return Ok(new { message = "Quantity decreased" });
+            if (id <= 0)
+                return BadRequest(new { message = "Invalid item ID." });
+
+            try
+            {
+                if (string.IsNullOrEmpty(ClientId))
+                    return Unauthorized(new { message = "User is not authenticated." });
+
+                await _cartService.DecreaseQuantityAsync(id);
+                return Ok(new { message = "Quantity decreased successfully" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Failed to decrease quantity.", error = ex.Message });
+            }
         }
     }
 }

@@ -1,0 +1,50 @@
+
+:root {
+    --primary-color: #023059;
+    --secondary-color: #EFB036;
+    --hover-color: #D9D9D9;
+    --accent-color: #9197B3;
+    --background-color: #F5F5F5;
+    --text-color: #222;
+    --border-color: rgba(2, 48, 89, 0.6);
+    --active-background: #D9D9D9; /* Soft light background for active link */
+    --sidebar-hover: rgba(2, 48, 89, 0.1); /* Light hover effect */
+}
+
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: "Arial", sans-serif;
+}
+
+
+
+/* :root {
+    --primary-color: #023059;
+    --secondary-color: #EFB036;
+    --hover-color: #ffbb00;
+    --background-color: #f4f4f7;
+    --text-color: #000;
+    --border-color: rgba(2, 48, 89, 0.5);
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+} */
+
+/* :root {
+    --primary-color: #023059;
+    --secondary-color: #EFB036;
+    --hover-color: #F7F7F8;
+    --accent-color: #9197B3;
+    --background-color: #F7F7F8;
+    --text-color: #000;
+    --border-color: rgba(2, 48, 89, 0.5);
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+} */

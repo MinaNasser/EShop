@@ -3,243 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Dashboard | Pointai</title>
+    <title>Shopping Cart | Pointai</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        .cart-icon {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        .cart-count {
-            background-color: red;
-            color: white;
-            font-size: 14px;
-            border-radius: 50%;
-            padding: 5px 8px;
-            position: absolute;
-            top: -5px;
-            right: -5px;
-        }
-        .cart-container {
-            margin-top: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="colors.css">
+    <link rel="stylesheet" href="components.css">
+    <link rel="stylesheet" href="./cart.css"> <!-- ملف CSS الخاص بالسلة -->
 </head>
-<body class="client-dashboard">
+<body>
 
-    <div class="container mt-5 text-center">
-        <h1 class="mb-4">Client Dashboard</h1>
-        <p>Welcome, valued client! 🎉</p>
-        
-        <!-- زر تسجيل الخروج -->
-        <button class="btn btn-danger" onclick="logout()">Logout</button>
-
-        <!-- أيقونة السلة -->
-        <div class="cart-icon" onclick="toggleCart()">
-            🛒 <span id="cart-count" class="cart-count">0</span>
+    <nav class="navbar navbar-light bg-light px-4 shadow-sm">
+        <h3 class="text-primary">Shopping Cart</h3>
+        <div>
+            <button class="btn btn-secondary" onclick="window.location.href='./client-dashboard.html'">Back to Shop</button>
+            <button class="btn btn-danger" onclick="logout()">Logout</button>
         </div>
+    </nav>
 
-        <!-- سلة المشتريات -->
-        <div id="cart-container" class="cart-container d-none">
-            <h3 class="text-primary">Shopping Cart</h3>
-            <p id="cart-loading-text">Loading cart...</p>
-            <div id="cart-items" class="row">
-                <!-- سيتم تحميل المنتجات هنا -->
-            </div>
-        </div>
+    <div class="container mt-4">
+        <h2 class="text-center text-primary">Your Cart</h2>
+        <p id="loading-text" class="text-center text-muted">Loading cart items...</p>
+
+        <div id="cart-items" class="cart-container"></div>
+        <p class="text-end"><strong>Total Items:</strong> <span id="cart-count">0</span></p>
     </div>
 
+    <script src="cart.js"></script> <!-- ملف JavaScript الخاص بالسلة -->
 </body>
-<!-- <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        updateCartCount(); // ✅ تحديث عدد العناصر عند تحميل الصفحة
-        loadCartItems(); // ✅ تحميل المنتجات عند فتح الصفحة
-    });
-
-    // ✅ تحديث عدد المنتجات في أيقونة السلة
-    function updateCartCount() {
-        fetch("http://localhost:5044/api/cart/count", {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                "Content-Type": "application/json"
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById("cart-count").innerText = data.count || 0;
-        })
-        .catch(error => console.error("Error fetching cart count:", error));
-    }
-
-    // ✅ تحميل المنتجات داخل السلة
-    function loadCartItems() {
-        fetch("http://localhost:5044/api/CartItem/index", {
-            method: "GET",
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                "Content-Type": "application/json"
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Failed to fetch cart items");
-            }
-            return response.json();
-        })
-        .then(cartItems => {
-            let cartContainer = document.getElementById("cart-items");
-            let loadingText = document.getElementById("cart-loading-text");
-            loadingText.style.display = "none"; // ✅ إخفاء رسالة "Loading..."
-
-            cartContainer.innerHTML = ""; // ✅ تفريغ المحتوى قبل إعادة الإضافة
-
-            if (!Array.isArray(cartItems) || cartItems.length === 0) {
-                cartContainer.innerHTML = `<p class="text-muted">Your cart is empty.</p>`;
-                return;
-            }
-
-            cartItems.forEach(item => {
-                let cartItem = document.createElement("div");
-                cartItem.className = "col-md-4 mb-4";
-                cartItem.innerHTML = `
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">${item.productName}</h5>
-                            <p class="card-text"><strong>Product ID:</strong> ${item.productId}</p>
-                            <button class="btn btn-danger" onclick="removeFromCart(${item.id})">Remove</button>
-                        </div>
-                    </div>
-                `;
-                cartContainer.appendChild(cartItem);
-            });
-        })
-        .catch(error => {
-            console.error("Error fetching cart items:", error);
-            document.getElementById("cart-items").innerHTML = `<p class="text-danger">Failed to load cart items.</p>`;
-        });
-    }
-
-    // ✅ إزالة منتج من السلة
-    function removeFromCart(itemId) {
-        fetch(`http://localhost:5044/api/CartItem/remove?id=${itemId}`, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                "Content-Type": "application/json"
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Failed to remove item");
-            }
-            return response.json();
-        })
-        .then(() => {
-            alert("Item removed from cart!");
-            updateCartCount(); // ✅ تحديث عدد المنتجات بعد الحذف
-            loadCartItems(); // ✅ إعادة تحميل المنتجات
-        })
-        .catch(error => console.error("Error removing item:", error));
-    }
-
-    // ✅ إظهار/إخفاء السلة
-    function toggleCart() {
-        let cartContainer = document.getElementById("cart-container");
-        cartContainer.classList.toggle("d-none");
-    }
-
-    // ✅ تسجيل الخروج
-    function logout() {
-        localStorage.removeItem("token");
-        window.location.href = "index.html";
-    }
-</script> -->
-
-
-
-
-
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            updateCartCount();
-            loadCartItems();
-        });
-
-        fetch("http://localhost:5044/api/cart/count", {
-    method: "GET",
-    headers: {
-        "Authorization": `Bearer ${localStorage.getItem("token")}`,
-        "Content-Type": "application/json"
-    }
-})
-
-
-        function loadCartItems() {
-            fetch("http://localhost:5044/api/CartItem/index", {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`
-                }
-            })
-            .then(response => response.json())
-            .then(cartItems => {
-                let cartContainer = document.getElementById("cart-items");
-                let loadingText = document.getElementById("cart-loading-text");
-                loadingText.style.display = "none";
-
-                if (cartItems.length === 0) {
-                    cartContainer.innerHTML = `<p class="text-muted">Your cart is empty.</p>`;
-                    return;
-                }
-
-                cartItems.forEach(item => {
-                    let cartItem = document.createElement("div");
-                    cartItem.className = "col-md-4 mb-4";
-                    cartItem.innerHTML = `
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">${item.productName}</h5>
-                                <p class="card-text"><strong>Product ID:</strong> ${item.productId}</p>
-                                <button class="btn btn-danger" onclick="removeFromCart(${item.id})">Remove</button>
-                            </div>
-                        </div>
-                    `;
-                    cartContainer.appendChild(cartItem);
-                });
-            })
-            .catch(error => console.error("Error fetching cart items:", error));
-        }
-
-        function removeFromCart(itemId) {
-            fetch(`http://localhost:5044/api/CartItem/remove?id=${itemId}`, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`
-                }
-            })
-            .then(response => response.json())
-            .then(() => {
-                alert("Item removed from cart!");
-                location.reload();
-            })
-            .catch(error => console.error("Error removing item:", error));
-        }
-
-        function toggleCart() {
-            let cartContainer = document.getElementById("cart-container");
-            cartContainer.classList.toggle("d-none");
-        }
-
-        function logout() {
-            localStorage.removeItem("token");
-            window.location.href = "index.html";
-        }
-    </script> 
-
 </html>

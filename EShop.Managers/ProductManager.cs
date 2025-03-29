@@ -13,7 +13,7 @@ namespace EShop.Manegers
 
         }
         public PaginationViewModel<ProductDetailsViewModel> Search(
-            string searchText = "", decimal price = 0,
+            string searchText = "", double price = 0,
             int categoryId = 0, string vendorId = "", int pageNumber = 1,
             int pageSize = 4)
         {
@@ -60,7 +60,7 @@ namespace EShop.Manegers
 
 
         }
-        public int GetCount(string searchText = "", decimal price = 0, int categoryId = 0)
+        public int GetCount(string searchText = "", double price = 0, int categoryId = 0)
         {
             var builder = PredicateBuilder.New<Product>(true);
 
