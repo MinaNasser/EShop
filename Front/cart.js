@@ -16,6 +16,8 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => document.getElementById("cart-count").innerText = data.count)
             .catch(error => console.error("Error fetching cart count:", error));
 
+
+        
         fetch(`${API_BASE_URL}/list`, { headers: { "Authorization": `Bearer ${token}` } })
             .then(response => response.json())
             .then(data => {
