@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -80,7 +82,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsStaging() || app.Enviro
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "EShop API v1");
-        c.RoutePrefix = string.Empty; // Swagger ›Ì «·’›Õ… «·—∆Ì”Ì…
+        c.RoutePrefix = string.Empty; // Swagger √ù√≠ √á√°√ï√ù√ç√â √á√°√ë√Ü√≠√ì√≠√â
     });
 }
 
